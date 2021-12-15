@@ -1,4 +1,5 @@
 using BCode.MusicPlayer.Core;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +7,7 @@ using Xunit;
 
 namespace BCode.MusicPlayer.WpfPlayerTests
 {
-    public class PlayerTest
+    public class PlayerTest// : IDisposable
     {
         private readonly IPlayer _player;
         private readonly string Good_Quality_Test_Files_Path = @"C:\temp\unit testing\music player\good quality songs";
@@ -118,7 +119,172 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             Assert.False(_player.IsPlaying);
             Assert.True(_player.Status == Status.Stopped);
         }
-        
+
+        [Fact]
+        public void PlayFromStoppedState_SongShouldPlay()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+
+            //Act
+            _player.Play();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);
+        }
+
+        [Fact]
+        public void Pause_SongShouldPause()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            _player.SkipAhead();
+
+            //Act
+            _player.Pause();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.False(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Paused);
+            Assert.True(_player.CurrentElapsedTime > TimeSpan.Zero);
+        }
+
+        [Fact]
+        public void PlayFromPausedState_SongShouldContinuePlaying()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            _player.SkipAhead();
+            _player.Pause();
+            var currentSongTime = _player.CurrentElapsedTime;
+
+            //Act
+            _player.Play();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);
+            Assert.True(currentSongTime >= _player.CurrentElapsedTime);
+        }
+
+        [Fact]
+        public void Stop_SongShouldStop()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+
+            //Act
+            _player.Stop();
+
+            //Assert
+            Assert.True(_player.CurrentSong is null);
+            Assert.False(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Stopped);
+            Assert.True(_player.CurrentElapsedTime == TimeSpan.Zero);
+        }
+
+        [Fact]
+        public void SkipAhead_SongElapsedTimeShouldMoveForward()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            var currentSongTime = _player.CurrentElapsedTime;
+
+            //Act
+            _player.SkipAhead();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);
+            Assert.True(_player.CurrentElapsedTime > currentSongTime);
+        }
+
+        [Fact]
+        public void SkipBack_SongElapsedTimeShouldMoveBackward()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            _player.SkipAhead();
+            var currentSongTime = _player.CurrentElapsedTime;
+
+            //Act
+            _player.SkipBack();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);
+            Assert.True(_player.CurrentElapsedTime < currentSongTime);
+        }
+
+        [Fact]
+        public void Next_NextSongShouldPlay()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            var intialSong = _player.CurrentSong;
+            var currentIndex = _player.PlayList.IndexOf(intialSong);
+            var nextIndex = currentIndex + 1;
+
+            if (nextIndex > _player.PlayList.Count - 1)
+                throw new Exception("not enough songs in playlist for testing");
+
+            var nextSong = _player.PlayList[nextIndex];
+
+            //Act
+            _player.Next();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);            
+            Assert.True(_player.CurrentSong == nextSong);
+        }
+
+        [Fact]
+        public void Previous_PreviousSongShouldPlay()
+        {
+            //Arrange
+            _player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _player.Play();
+            _player.Next();
+            var intialSong = _player.CurrentSong;
+            var currentIndex = _player.PlayList.IndexOf(intialSong);
+            var prevIndex = currentIndex - 1;
+
+            if (prevIndex < 0)
+                throw new Exception("not enough songs in playlist for testing");
+
+            var prevSong = _player.PlayList[prevIndex];
+
+            //Act
+            _player.Previous();
+
+            //Assert
+            Assert.True(_player.CurrentSong is not null);
+            Assert.True(_player.IsPlaying);
+            Assert.True(_player.Status == Status.Playing);
+            Assert.True(_player.CurrentSong == prevSong);
+        }
 
         private void SetupNewSamplePlayList()
         {
@@ -141,7 +307,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
         {
             List<string> songFiles = new();
 
-            var path = quality == Quality.Corrupted ? Corrupted_Test_Files_Path : Good_Quality_Test_Files_Path;
+            var path = quality == FileQuality.Corrupted ? Corrupted_Test_Files_Path : Good_Quality_Test_Files_Path;
 
             Directory.CreateDirectory(path);
 
@@ -152,9 +318,22 @@ namespace BCode.MusicPlayer.WpfPlayerTests
                 throw new FileNotFoundException($"no sample music files found for testing in {path}");
             }
 
+            if (foundSongs.Count < 3 && quality == FileQuality.Good)
+            {
+                throw new FileNotFoundException($"minimum of 3 sample music files required for testing in {path}");
+            }
+
             songFiles.AddRange(foundSongs);
 
             return songFiles;
+        }
+
+        public void Dispose()
+        {
+            //if (_player is not null)
+            //{
+            //    _player.Dispose();
+            //}
         }
 
         public enum FileQuality
