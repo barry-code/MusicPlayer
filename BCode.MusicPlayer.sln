@@ -1,0 +1,53 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.WpfPlayer", "BCode.MusicPlayer.WpfPlayer\BCode.MusicPlayer.WpfPlayer.csproj", "{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.Core", "BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj", "{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.Infrastructure", "BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj", "{70872B37-D3FD-4B7C-9A0B-2C88246332CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D05D5C25-1881-4F18-9AE1-990E7E5FE217}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8692E81C-C0C8-491A-A932-C4462A962C53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCode.MusicPlayer.WpfPlayerTests", "BCode.MusicPlayer.Tests\BCode.MusicPlayer.WpfPlayerTests.csproj", "{B635B235-0425-49BD-A3F8-8A5D4706C408}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70872B37-D3FD-4B7C-9A0B-2C88246332CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70872B37-D3FD-4B7C-9A0B-2C88246332CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70872B37-D3FD-4B7C-9A0B-2C88246332CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70872B37-D3FD-4B7C-9A0B-2C88246332CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B635B235-0425-49BD-A3F8-8A5D4706C408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B635B235-0425-49BD-A3F8-8A5D4706C408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B635B235-0425-49BD-A3F8-8A5D4706C408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B635B235-0425-49BD-A3F8-8A5D4706C408}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BE8127C6-BAFE-4C25-A5E1-DAE71ABB432E} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
+		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
+		{70872B37-D3FD-4B7C-9A0B-2C88246332CB} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
+		{B635B235-0425-49BD-A3F8-8A5D4706C408} = {8692E81C-C0C8-491A-A932-C4462A962C53}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A7DB7CD9-7FC3-46ED-9822-4363E81CCAC3}
+	EndGlobalSection
+EndGlobal
