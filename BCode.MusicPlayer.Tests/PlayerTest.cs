@@ -3,19 +3,23 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Xunit;
 
 namespace BCode.MusicPlayer.WpfPlayerTests
 {
-    public class PlayerTest// : IDisposable
+    public class PlayerTest : IDisposable
     {
         private readonly IPlayer _player;
         private readonly string Good_Quality_Test_Files_Path = @"C:\temp\unit testing\music player\good quality songs";
         private readonly string Corrupted_Test_Files_Path = @"C:\temp\unit testing\music player\corrupted songs";
         private readonly string[] musicFileExtensions = { ".mp3", ".mp4", ".wav", ".wma" };
 
-        public PlayerTest(IPlayer player) => _player = player;
-        
+        public PlayerTest(IPlayer player)
+        {
+             _player = player;
+            _player.PlayerEvent += HandlePlayerEvent;
+        }               
 
         [Fact]
         public void VolumeZero_IsMutedShouldBeTrue()
@@ -76,7 +80,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
         public void AddSongsToPlaylist_SongsShouldBeAddedToPlayList()
         {
             //arrange
-            var songs = GetSampleSongFilesForTesting();
+            var songs = GetSampleSongFilesForTesting();            
 
             //act
             SetupNewSamplePlayList();
@@ -164,7 +168,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             _player.Play();
             _player.SkipAhead();
             _player.Pause();
-            var currentSongTime = _player.CurrentElapsedTime;
+            var pausedSongTime = _player.CurrentElapsedTime;
 
             //Act
             _player.Play();
@@ -173,7 +177,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             Assert.True(_player.CurrentSong is not null);
             Assert.True(_player.IsPlaying);
             Assert.True(_player.Status == Status.Playing);
-            Assert.True(currentSongTime >= _player.CurrentElapsedTime);
+            Assert.True(_player.CurrentElapsedTime >= pausedSongTime);
         }
 
         [Fact]
@@ -186,6 +190,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
 
             //Act
             _player.Stop();
+            Thread.Sleep(1000);
 
             //Assert
             Assert.True(_player.CurrentSong is null);
@@ -251,6 +256,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
 
             //Act
             _player.Next();
+            Thread.Sleep(2000);
 
             //Assert
             Assert.True(_player.CurrentSong is not null);
@@ -265,8 +271,8 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             //Arrange
             _player.ClearPlayList();
             AddSampleSongsToPlayList();
-            _player.Play();
-            _player.Next();
+            var lastSongIndex = _player.PlayList.Count - 1;
+            _player.Play(lastSongIndex);
             var intialSong = _player.CurrentSong;
             var currentIndex = _player.PlayList.IndexOf(intialSong);
             var prevIndex = currentIndex - 1;
@@ -278,6 +284,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
 
             //Act
             _player.Previous();
+            Thread.Sleep(2000);
 
             //Assert
             Assert.True(_player.CurrentSong is not null);
@@ -286,16 +293,18 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             Assert.True(_player.CurrentSong == prevSong);
         }
 
-        private void SetupNewSamplePlayList()
+        private void SetupNewSamplePlayList(FileQuality quality = FileQuality.Good)
         {
             _player.ClearPlayList();
 
-            AddSampleSongsToPlayList();
+            AddSampleSongsToPlayList(quality);
         }
 
-        private void AddSampleSongsToPlayList()
+        private void AddSampleSongsToPlayList(FileQuality quality = FileQuality.Good)
         {
-            var songs = GetSampleSongFilesForTesting();
+            MutePlayer();
+            
+            var songs = GetSampleSongFilesForTesting(quality);
 
             foreach (var item in songs)
             {
@@ -328,12 +337,22 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             return songFiles;
         }
 
+        private void MutePlayer()
+        {
+            _player.CurrentVolume = 0.0f;
+        }
+
+        private void HandlePlayerEvent(object? sender, PlayerEvent e)
+        {
+        }
+
         public void Dispose()
         {
-            //if (_player is not null)
-            //{
-            //    _player.Dispose();
-            //}
+            if (_player is not null)
+            {
+                _player.PlayerEvent -= HandlePlayerEvent;
+                _player.Dispose();
+            }
         }
 
         public enum FileQuality

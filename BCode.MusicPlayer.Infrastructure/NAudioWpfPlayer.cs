@@ -145,22 +145,6 @@ namespace BCode.MusicPlayer.Infrastructure
             Stop();
         }
 
-        public void Pause()
-        {
-            try
-            {
-                isManualStop = true;
-                _outputDevice?.Pause();
-                Status = Status.Paused;
-            }
-            catch (Exception ex)
-            {
-                Status = Status.Stopped;
-                PublishEvent($"Unable to pause", Core.PlayerEvent.Type.Error, ex);
-            }
-
-        }
-
         private void Play(ISong song)
         {
             try
@@ -194,6 +178,22 @@ namespace BCode.MusicPlayer.Infrastructure
                 PublishEvent($"Unable to play song [{song.Name}]", Core.PlayerEvent.Type.Error, ex);
             }
         }
+
+        public void Pause()
+        {
+            try
+            {
+                isManualStop = true;
+                _outputDevice?.Pause();
+                Status = Status.Paused;
+            }
+            catch (Exception ex)
+            {
+                Status = Status.Stopped;
+                PublishEvent($"Unable to pause", Core.PlayerEvent.Type.Error, ex);
+            }
+
+        }        
 
         private void Resume()
         {
