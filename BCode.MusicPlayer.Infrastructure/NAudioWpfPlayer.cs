@@ -10,13 +10,14 @@ using System.Collections.ObjectModel;
 using System.Reactive.Linq;
 using System.Reactive;
 using BCode.MusicPlayer.Core;
+using System.Diagnostics;
 
 namespace BCode.MusicPlayer.Infrastructure
 {
     public class NAudioWpfPlayer : ReactiveObject, IPlayer, IDisposable
     {
         private WaveOutEvent _outputDevice;
-        private AudioFileReader _audioFile;
+        private WaveStream _audioFile;
         private float MAX_VOLUME = 1.0f;
         private int SKIP_INTERVAL = 10;        
         private bool isManualStop = false;
@@ -164,7 +165,17 @@ namespace BCode.MusicPlayer.Infrastructure
 
                 if (_audioFile == null)
                 {
-                    _audioFile = new AudioFileReader(song.Path);
+                    try
+                    {
+                        _audioFile = new AudioFileReader(song.Path);
+                    }
+                    catch (Exception)
+                    {
+                        _audioFile?.Dispose();
+
+                        _audioFile = new MediaFoundationReader(song.Path);                        
+                    }
+                    
                 }
 
                 _outputDevice.Init(_audioFile);
@@ -471,17 +482,25 @@ namespace BCode.MusicPlayer.Infrastructure
             {
                 songsFound = await Task.Run(() =>
                 {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+
                     var songList = new List<ISong>();
 
                     var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
-                            .Where(f => f.ToLower().EndsWith(".mp3") || f.ToLower().EndsWith(".mp4") || f.ToLower().EndsWith(".wav"))
+                            .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f)))
                             .ToList();
+
+                    sw.Stop();
+                    var s1 = sw.Elapsed.TotalSeconds;
+                    Console.WriteLine($"getting files took {s1} seconds");
 
                     if (files?.Count == 0)
                     {
                         return songList;
                     }
 
+                    sw.Restart();
                     int num = PlayList.Count > 0 ? PlayList.Count + 1 : 1;
                     foreach (var songFile in files)
                     {
@@ -492,6 +511,9 @@ namespace BCode.MusicPlayer.Infrastructure
                             songList.Add(s);
                         }
                     }
+                    sw.Stop();
+                    var s2 = sw.Elapsed.TotalSeconds;
+                    Console.WriteLine($"getting song info took {s2} seconds");
 
                     return songList;
 

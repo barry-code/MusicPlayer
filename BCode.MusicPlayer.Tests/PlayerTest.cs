@@ -13,7 +13,6 @@ namespace BCode.MusicPlayer.WpfPlayerTests
         private readonly IPlayer _player;
         private readonly string Good_Quality_Test_Files_Path = @"C:\temp\unit testing\music player\good quality songs";
         private readonly string Corrupted_Test_Files_Path = @"C:\temp\unit testing\music player\corrupted songs";
-        private readonly string[] musicFileExtensions = { ".mp3", ".mp4", ".wav", ".wma" };
 
         public PlayerTest(IPlayer player)
         {
@@ -320,7 +319,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
 
             Directory.CreateDirectory(path);
 
-            var foundSongs = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly).Where(f => musicFileExtensions.Contains(Path.GetExtension(f))).ToList();
+            var foundSongs = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly).Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f))).ToList();
 
             if (foundSongs.Count == 0)
             {
