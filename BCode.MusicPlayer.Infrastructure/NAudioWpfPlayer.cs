@@ -18,26 +18,26 @@ namespace BCode.MusicPlayer.Infrastructure
     {
         private WaveOutEvent _outputDevice;
         private WaveStream _audioFile;
-        private float MAX_VOLUME = 1.0f;
-        private int SKIP_INTERVAL = 10;        
+        private const float MAX_VOLUME = 1.0f;
+        private const int SKIP_INTERVAL = 10;        
         private bool isManualStop = false;
-        private CancellationTokenSource _cancelTokenSource;
+        private CancellationTokenSource _mainCancelTokenSource;
         private readonly object songTimeLock = new Object(); 
 
         public NAudioWpfPlayer()
         {
-            _cancelTokenSource = new CancellationTokenSource();
+            _mainCancelTokenSource = new CancellationTokenSource();
 
             CurrentVolume = 10f;
 
             Task.Run(() =>
             {
-                while (!_cancelTokenSource.Token.IsCancellationRequested)
+                while (!_mainCancelTokenSource.Token.IsCancellationRequested)
                 {                    
                     UpdateSongTime();
                     Thread.Sleep(500);
                 }
-            },_cancelTokenSource.Token);
+            });
 
             this.WhenAnyValue(x => x.Status)
                 .DistinctUntilChanged()
@@ -312,9 +312,9 @@ namespace BCode.MusicPlayer.Infrastructure
             PublishEvent($"Added {songs.Count} songs to playlist");
         }
 
-        public async Task AddSongsToPlayList(string folderPath)
+        public async Task AddSongsToPlayList(string folderPath, CancellationToken addSongsCancelToken)
         {
-            var songs = await GetSongsFromFolder(folderPath);
+            var songs = await GetSongsFromFolder(folderPath, addSongsCancelToken);
 
             AddSongsToPlayList(songs);
         }
@@ -384,7 +384,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public void Dispose()
         {
-            _cancelTokenSource?.Cancel();
+            _mainCancelTokenSource?.Cancel();
             Cleanup();
         }
 
@@ -469,7 +469,7 @@ namespace BCode.MusicPlayer.Infrastructure
             return song;
         }
 
-        private async Task<ICollection<ISong>> GetSongsFromFolder(string folderPath)
+        private async Task<ICollection<ISong>> GetSongsFromFolder(string folderPath, CancellationToken addSongsCancelToken)
         {
             var songsFound = new List<ISong>();
 
@@ -478,29 +478,34 @@ namespace BCode.MusicPlayer.Infrastructure
                 return songsFound;
             }
 
-            try
+            songsFound = await Task.Run(() =>
             {
-                songsFound = await Task.Run(() =>
-                {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
+                var songList = new List<ISong>();
 
-                    var songList = new List<ISong>();
+                try
+                {
+                    if (addSongsCancelToken.IsCancellationRequested)
+                    {
+                        addSongsCancelToken.ThrowIfCancellationRequested();
+                    }
+
+                    //Stopwatch sw = new Stopwatch();
+                    //sw.Start();
 
                     var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
                             .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f)))
                             .ToList();
 
-                    sw.Stop();
-                    var s1 = sw.Elapsed.TotalSeconds;
-                    Console.WriteLine($"getting files took {s1} seconds");
+                    //sw.Stop();
+                    //var s1 = sw.Elapsed.TotalSeconds;
+                    //Console.WriteLine($"getting files took {s1} seconds");
 
                     if (files?.Count == 0)
                     {
                         return songList;
                     }
 
-                    sw.Restart();
+                    //sw.Restart();
                     int num = PlayList.Count > 0 ? PlayList.Count + 1 : 1;
                     foreach (var songFile in files)
                     {
@@ -510,19 +515,25 @@ namespace BCode.MusicPlayer.Infrastructure
                             num++;
                             songList.Add(s);
                         }
+
+                        if (addSongsCancelToken.IsCancellationRequested)
+                        {
+                            addSongsCancelToken.ThrowIfCancellationRequested();
+                        }
                     }
-                    sw.Stop();
-                    var s2 = sw.Elapsed.TotalSeconds;
-                    Console.WriteLine($"getting song info took {s2} seconds");
+                    //sw.Stop();
+                    //var s2 = sw.Elapsed.TotalSeconds;
+                    //Console.WriteLine($"getting song info took {s2} seconds");
+                }
+                catch (OperationCanceledException)
+                {
+                    songList.Clear();
+                    PublishEvent("Cancelled getting songs");
+                }
 
-                    return songList;
+                return songList;
 
-                }, _cancelTokenSource.Token);
-            }
-            catch (OperationCanceledException)
-            {
-                songsFound.Clear();
-            }
+            }, _mainCancelTokenSource.Token);
 
             return songsFound;
         }

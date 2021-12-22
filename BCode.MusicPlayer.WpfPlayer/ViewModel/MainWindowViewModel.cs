@@ -10,16 +10,19 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.ComponentModel;
 using Microsoft.Extensions.Logging;
+using System.Threading;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
     public class MainWindowViewModel : ReactiveObject, IDisposable
     {
         private ILogger _logger;
+        private CancellationTokenSource _cancelTokenSource;
+
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
             Player = player;
-            _logger = logger;
+            _logger = logger;            
 
             Player.PlayerEvent += HandlePlayerEvent;
 
@@ -35,6 +38,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             StopCmd = ReactiveCommand.Create(Stop);
             SkipAheadCmd = ReactiveCommand.Create(SkipAhead);
             SkipBackCmd = ReactiveCommand.Create(SkipBack);
+            CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
@@ -47,9 +51,17 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public ReactiveCommand<Unit, Unit> StopCmd { get; }
         public ReactiveCommand<Unit, Unit> SkipAheadCmd { get; }
         public ReactiveCommand<Unit, Unit> SkipBackCmd { get; }
+        public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
 
 
         public IPlayer Player { get; private set; }
+
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set => this.RaiseAndSetIfChanged(ref _isLoading, value);
+        }
 
         public void Play()
         {
@@ -159,13 +171,21 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 if (result != DialogResult.OK)
                     return;
 
+                _cancelTokenSource = new CancellationTokenSource();
+                IsLoading = true;
+
                 var path = dlg.SelectedPath;
 
-                await Player.AddSongsToPlayList(path);
+                await Player.AddSongsToPlayList(path, _cancelTokenSource.Token);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
+                _cancelTokenSource?.Dispose();
             }
         }
 
@@ -198,8 +218,16 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
+        private void CancelLoad()
+        {
+            _cancelTokenSource.Cancel();
+            IsLoading = false;
+        }
+
         public void Dispose()
         {
+            _cancelTokenSource?.Dispose();
+
             if (Player is not null)
             {
                 Player.PlayerEvent -= HandlePlayerEvent;

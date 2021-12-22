@@ -26,7 +26,7 @@ namespace BCode.MusicPlayer.Core
         void AddSongToPlayList(ISong song);
         void AddSongToPlayList(string filePath);
         void AddSongsToPlayList(ICollection<ISong> songs);
-        Task AddSongsToPlayList(string folderPath);
+        Task AddSongsToPlayList(string folderPath, CancellationToken addSongscancelToken);
         void RemoveSongFromPlayList(ISong song);
         void ClearPlayList();
         void OnLoad();
