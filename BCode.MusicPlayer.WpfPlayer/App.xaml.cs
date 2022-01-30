@@ -26,44 +26,9 @@ namespace BCode.MusicPlayer.WpfPlayer
     {
         private static IContainer _container { get; set; }
         private ILogger _logger;
-        //public IServiceProvider ServiceProvider { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            /* FAILING DUE TO NOT RECOG ILOGGER IN MAINWINDOW */
-            //IHost host = new HostBuilder()
-            //    .ConfigureServices((hostContext, services) =>
-            //    {
-            //        services.AddSingleton<MainWindow>();
-            //        services.AddSingleton<IPlayer, NAudioWpfPlayer>();
-            //        services.AddScoped<ISong, Song>();
-            //    })
-            //    .ConfigureLogging(logBuilder =>
-            //    {
-            //        logBuilder.SetMinimumLevel(LogLevel.Trace);
-            //        logBuilder.AddLog4Net("log4net.config");
-            //    })
-            //    .Build();
-
-            //using (var scope = host.Services.CreateScope())
-            //{
-            //    var services = scope.ServiceProvider;
-
-            //    try
-            //    {
-            //        var mainWindow = services.GetRequiredService<MainWindow>();
-            //        mainWindow.Show();
-
-            //        Console.WriteLine("WORKING");
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Console.WriteLine("ERROR IN STARTUP: " + ex.Message);
-            //        throw ex;
-            //    }
-            //}
-
-            /* AUTOFAC VERSION */
             base.OnStartup(e);
 
             var builder = new ContainerBuilder();

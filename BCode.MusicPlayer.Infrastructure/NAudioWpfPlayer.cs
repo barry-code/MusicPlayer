@@ -505,23 +505,15 @@ namespace BCode.MusicPlayer.Infrastructure
                         addSongsCancelToken.ThrowIfCancellationRequested();
                     }
 
-                    //Stopwatch sw = new Stopwatch();
-                    //sw.Start();
-
                     var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
                             .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f),StringComparer.CurrentCultureIgnoreCase))
                             .ToList();
-
-                    //sw.Stop();
-                    //var s1 = sw.Elapsed.TotalSeconds;
-                    //Console.WriteLine($"getting files took {s1} seconds");
 
                     if (files?.Count == 0)
                     {
                         return songList;
                     }
 
-                    //sw.Restart();
                     int num = PlayList.Count > 0 ? PlayList.Count + 1 : 1;
                     foreach (var songFile in files)
                     {
@@ -537,9 +529,6 @@ namespace BCode.MusicPlayer.Infrastructure
                             addSongsCancelToken.ThrowIfCancellationRequested();
                         }
                     }
-                    //sw.Stop();
-                    //var s2 = sw.Elapsed.TotalSeconds;
-                    //Console.WriteLine($"getting song info took {s2} seconds");
                 }
                 catch (OperationCanceledException)
                 {
