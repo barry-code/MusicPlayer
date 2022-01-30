@@ -34,5 +34,6 @@ namespace BCode.MusicPlayer.Core
         void VolumeDown();
         void SkipAhead();
         void SkipBack();
+        void SkipTo(int seconds);
     }
 }

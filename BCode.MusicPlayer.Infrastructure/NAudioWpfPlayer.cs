@@ -52,7 +52,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 .Subscribe(x =>
                 {
                     UpdateSongTime();
-                    PublishEvent($"Now playing song [{CurrentSong.Name}]");
+                    PublishEvent($"Now playing [{CurrentSong.Name}]");
                 });
 
             this.WhenAnyValue(x => x.CurrentVolume)
@@ -197,6 +197,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 isManualStop = true;
                 _outputDevice?.Pause();
                 Status = Status.Paused;
+                PublishEvent("Paused");
             }
             catch (Exception ex)
             {
@@ -210,7 +211,7 @@ namespace BCode.MusicPlayer.Infrastructure
         {
             _outputDevice.Play();
             Status = Status.Playing;
-            PublishEvent($"Resumed playing");
+            PublishEvent($"Resumed playing [{CurrentSong.Name}]");
         }
 
         public void Next()
@@ -282,6 +283,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 isManualStop = true;
                 _outputDevice?.Stop();
                 Cleanup();
+                PublishEvent("Stopped");
             }
             catch (Exception ex)
             {
@@ -432,6 +434,21 @@ namespace BCode.MusicPlayer.Infrastructure
             UpdateSongTime();
         }
 
+        public void SkipTo(int seconds)
+        {
+            if (_outputDevice is null)
+                return;
+
+            if (_audioFile is null)
+                return;                       
+            
+            _outputDevice.Pause();
+            _audioFile.CurrentTime = TimeSpan.FromSeconds(seconds);
+            _outputDevice.Play();
+
+            UpdateSongTime();
+        }
+
         private ISong GetSongFromFile(int id, string path)
         {
             ISong song;
@@ -442,31 +459,30 @@ namespace BCode.MusicPlayer.Infrastructure
             if (!File.Exists(path))
                 PublishEvent($"File not found [path]", Core.PlayerEvent.Type.Error, new FileNotFoundException(path));
 
-            TagLib.File file;
-
             try
             {
-                file = TagLib.File.Create(new FileAbstraction(path));
+                using (TagLib.File file = TagLib.File.Create(new FileAbstraction(path)))
+                {
+                    song = new Song();
+                    song.SongId = id;
+                    song.Order = 1;
+                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"Unknown Song {id.ToString()}";
+                    song.Path = path;
+                    song.Extension = Path.GetExtension(path);
+                    song.Size = file.Length;
+                    song.ArtistName = string.IsNullOrEmpty(file.Tag.FirstPerformer) ? file.Tag.FirstAlbumArtistSort : file.Tag.FirstPerformer;
+                    song.AlbumName = string.IsNullOrEmpty(file.Tag.Album) ? file.Tag.AlbumSort : file.Tag.Album;
+                    song.Year = file.Tag.Year == 0 ? String.Empty : file.Tag.Year.ToString();
+                    song.Duration = file.Properties.Duration;
+                }
+
+                return song;
             }
             catch (Exception ex)
             {
                 PublishEvent($"Error getting song information [{path}]", Core.PlayerEvent.Type.Error, ex);
                 return null;                
             }
-
-            song = new Song();
-            song.SongId = id;
-            song.Order = 1;
-            song.Name = file.Tag.Title;
-            song.Path = path;
-            song.Extension = Path.GetExtension(path);
-            song.Size = file.Length;
-            song.ArtistName = string.IsNullOrEmpty(file.Tag.FirstPerformer) ? file.Tag.FirstAlbumArtistSort : file.Tag.FirstPerformer;
-            song.AlbumName = string.IsNullOrEmpty(file.Tag.Album) ? file.Tag.AlbumSort : file.Tag.Album;
-            song.Year = file.Tag.Year == 0 ? String.Empty : file.Tag.Year.ToString();
-            song.Duration = file.Properties.Duration;
-
-            return song;
         }
 
         private async Task<ICollection<ISong>> GetSongsFromFolder(string folderPath, CancellationToken addSongsCancelToken)
@@ -493,7 +509,7 @@ namespace BCode.MusicPlayer.Infrastructure
                     //sw.Start();
 
                     var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
-                            .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f)))
+                            .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f),StringComparer.CurrentCultureIgnoreCase))
                             .ToList();
 
                     //sw.Stop();

@@ -11,6 +11,8 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using Microsoft.Extensions.Logging;
 using System.Threading;
+using MaterialDesignThemes.Wpf;
+using System.Reactive.Linq;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -18,6 +20,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     {
         private ILogger _logger;
         private CancellationTokenSource _cancelTokenSource;
+        private SnackbarMessageQueue _messageQueue = new SnackbarMessageQueue();
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
@@ -39,6 +42,18 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             SkipAheadCmd = ReactiveCommand.Create(SkipAhead);
             SkipBackCmd = ReactiveCommand.Create(SkipBack);
             CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
+
+            this.WhenAnyValue(x => x.Player.CurrentSong)
+                .Where(x => x != null)
+                .DistinctUntilChanged()
+                .Subscribe((x) => {
+                    UpdateSongTimes(true);
+                });
+
+            this.WhenAnyValue(x => x.Player.CurrentElapsedTime)
+                .WhereNotNull()
+                .DistinctUntilChanged()
+                .Subscribe((x) => { UpdateSongTimes(false); });
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
@@ -53,6 +68,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public ReactiveCommand<Unit, Unit> SkipBackCmd { get; }
         public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
 
+        public SnackbarMessageQueue MessageQueue => _messageQueue;
 
         public IPlayer Player { get; private set; }
 
@@ -62,6 +78,24 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             get => _isLoading;
             set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
+
+        private int _currentSongElapsedTime;
+        public int CurrentSongElapsedTime 
+        {
+            get 
+            { 
+                return (int)(Player?.CurrentElapsedTime.TotalSeconds ?? 0); 
+            }
+            
+            set
+            {
+                _currentSongElapsedTime = value;
+                SetSeekTime(_currentSongElapsedTime);                
+            } 
+        }
+        
+        public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
+
 
         public void Play()
         {
@@ -210,11 +244,17 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 if (ev.EventType == PlayerEvent.Type.Error)
                 {
                     _logger.LogError(ev.Message);
-                    MessageBox.Show("ERROR:" + ev.Message);
+                    _messageQueue.Enqueue(ev.Message,null,null,null,true,false,TimeSpan.FromSeconds(2));
+                    return;
+                }
+
+                if (ev.Message == "Stopped")
+                {
                     return;
                 }
 
                 _logger.LogInformation(ev.Message);
+                _messageQueue.Enqueue(ev.Message, null, null, null, false, false, TimeSpan.FromSeconds(1));
             }
         }
 
@@ -224,9 +264,32 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             IsLoading = false;
         }
 
+        private void UpdateSongTimes(bool isNewSong)
+        {
+            if (isNewSong)
+            {
+                this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
+            }
+
+            this.RaisePropertyChanged(nameof(CurrentSongElapsedTime));
+        }
+
+        private void SetSeekTime(int songTimeInSeconds)
+        {            
+            try
+            {
+                Player.SkipTo(songTimeInSeconds);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+        }
+
         public void Dispose()
         {
             _cancelTokenSource?.Dispose();
+            _messageQueue?.Clear();
 
             if (Player is not null)
             {
@@ -235,5 +298,5 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
             
         }
-    }
+    }    
 }

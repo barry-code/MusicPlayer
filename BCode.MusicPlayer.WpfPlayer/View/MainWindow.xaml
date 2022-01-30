@@ -119,7 +119,7 @@
                             <ColumnDefinition Width="70"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Player.CurrentElapsedTime, StringFormat=mm\\:ss}" HorizontalAlignment="Center" Margin="10,0" />
-                        <ProgressBar Grid.Column="1" x:Name="trackProgress" Opacity="0.9" Height="5" HorizontalAlignment="Stretch" Background="{DynamicResource SecondaryHueMidBrush}" />
+                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Style="{StaticResource MaterialDesignDiscreteHorizontalSlider}" Value="{Binding CurrentSongElapsedTime, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20" />
                         <TextBlock Grid.Column="2" HorizontalAlignment="Center" Margin="10,0" Text="{Binding Player.CurrentSong.Duration, StringFormat=mm\\:ss}"/>
                     </Grid>
 
@@ -181,7 +181,7 @@
                     </Grid.ColumnDefinitions>
 
                     <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" >
-                        <ListBox  ItemsSource="{Binding Player.Messages}" DisplayMemberPath="Display"/>
+                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding MessageQueue}" HorizontalAlignment="Stretch" />
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
