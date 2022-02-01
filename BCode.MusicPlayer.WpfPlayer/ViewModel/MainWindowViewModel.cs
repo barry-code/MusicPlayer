@@ -13,6 +13,7 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using MaterialDesignThemes.Wpf;
 using System.Reactive.Linq;
+using System.Windows.Threading;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -31,7 +32,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             _logger.LogDebug("Starting");
 
-            AddFilesCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist);
+            AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles);
+            AddFolderCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist);
             ClearPlayListCmd = ReactiveCommand.Create(ClearPlaylist);
             PlayCmd = ReactiveCommand.Create(Play);
             PlaySongFromPlayListCmd = ReactiveCommand.Create<int>(PlaySongFromPlaylist);
@@ -57,6 +59,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
+        public ReactiveCommand<Unit, Unit> AddFolderCmd { get; }
         public ReactiveCommand<Unit, Unit> ClearPlayListCmd { get; }
         public ReactiveCommand<Unit, Unit> PlayCmd { get; }
         public ReactiveCommand<int, Unit> PlaySongFromPlayListCmd { get; }
@@ -97,7 +100,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
 
 
-        public void Play()
+        private void Play()
         {
             try
             {
@@ -109,7 +112,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }            
         }
 
-        public void Pause()
+        private void Pause()
         {            
             try
             {
@@ -121,7 +124,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void Previous()
+        private void Previous()
         {
             try
             {
@@ -133,7 +136,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void Stop()
+        private void Stop()
         {
             try
             {
@@ -145,7 +148,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void Next()
+        private void Next()
         {
             try
             {
@@ -157,7 +160,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void SkipAhead()
+        private void SkipAhead()
         {
             try
             {
@@ -169,7 +172,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void SkipBack()
+        private void SkipBack()
         {
             try
             {
@@ -181,7 +184,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void ClearPlaylist()
+        private void ClearPlaylist()
         {
             try
             {
@@ -193,12 +196,49 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public async Task AddSongsToPlaylist()
+        private async Task AddFiles() 
+        {
+            try
+            {
+                var dlg = new OpenFileDialog();
+                dlg.Multiselect = true;
+                
+                var result = dlg.ShowDialog();
+
+                if (result != DialogResult.OK)
+                    return;
+
+                _cancelTokenSource = new CancellationTokenSource();
+                IsLoading = true;
+
+                await Task.Run( () =>
+                {
+                    App.Current.Dispatcher.InvokeAsync(() =>
+                    {
+                        var files = dlg.FileNames;
+                        foreach (var file in files)
+                        {
+                            Player.AddSongToPlayList(file);
+                        }
+                    },DispatcherPriority.Normal,_cancelTokenSource.Token);
+                },_cancelTokenSource.Token);                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+            finally
+            {
+                IsLoading = false;
+                _cancelTokenSource?.Dispose();
+            }
+        }
+
+        private async Task AddSongsToPlaylist()
         {
             try
             {
                 FolderBrowserDialog dlg = new FolderBrowserDialog();
-                dlg.Description = "Select folder containing songs to load...";
 
                 var result = dlg.ShowDialog();
 
@@ -223,7 +263,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void PlaySongFromPlaylist(int playlistIndex)
+        private void PlaySongFromPlaylist(int playlistIndex)
         {
             try
             {

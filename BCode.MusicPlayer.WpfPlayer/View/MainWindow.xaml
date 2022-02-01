@@ -132,13 +132,19 @@
                     </Grid.ColumnDefinitions>
                     <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                         <StackPanel Orientation="Vertical">
-                            <Button x:Name="addToPlayListBtn" Margin="5" Padding="2" Command="{Binding AddFilesCmd}" Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <Button Margin="5" Padding="2" Command="{Binding AddFilesCmd}" Style="{DynamicResource MaterialDesignRaisedButton}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="Add to PlayList"/>
+                                    <TextBlock Text="Add File(s) to PlayList"/>
                                     <materialDesign:PackIcon Kind="Files" Margin="10,0,0,0"/>
                                 </StackPanel>
                             </Button>
-                            <Button x:Name="clearPlaylistBtn" Margin="5" Padding="2" Command="{Binding ClearPlayListCmd}" Style="{DynamicResource MaterialDesignRaisedButton}">
+                            <Button Margin="5" Padding="2" Command="{Binding AddFolderCmd}" Style="{DynamicResource MaterialDesignRaisedButton}">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Add Folder to PlayList"/>
+                                    <materialDesign:PackIcon Kind="Folder" Margin="10,0,0,0"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Margin="5" Padding="2" Command="{Binding ClearPlayListCmd}" Style="{DynamicResource MaterialDesignRaisedButton}">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock Text="Clear PlayList"/>
                                     <materialDesign:PackIcon Kind="ClearCircle" Margin="10,0,0,0"/>
@@ -150,7 +156,7 @@
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                         <DataGrid x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Id" Binding="{Binding SongId}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="Id" Binding="{Binding Order}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Song" Binding="{Binding Name}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Artist" Binding="{Binding ArtistName}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Album" Binding="{Binding AlbumName}" IsReadOnly="True" />

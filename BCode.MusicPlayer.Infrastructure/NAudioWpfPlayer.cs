@@ -22,7 +22,8 @@ namespace BCode.MusicPlayer.Infrastructure
         private const int SKIP_INTERVAL = 10;        
         private bool isManualStop = false;
         private CancellationTokenSource _mainCancelTokenSource;
-        private readonly object songTimeLock = new Object(); 
+        private readonly object songTimeLock = new Object();
+        private int _playlistSongCount;
 
         public NAudioWpfPlayer()
         {
@@ -294,13 +295,15 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public void AddSongToPlayList(ISong song)
         {
+            _playlistSongCount++;
+            song.Order = _playlistSongCount;
             PlayList.Add(song);
-            PublishEvent($"Added song [{song.Name}] to playlist");
+            //PublishEvent($"Added song [{song.Name}] to playlist");
         }
 
         public void AddSongToPlayList(string filePath)
         {
-            var song = GetSongFromFile(1, filePath);
+            var song = GetSongFromFile(filePath);
 
             if (song is not null)
             {
@@ -310,6 +313,11 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public void AddSongsToPlayList(ICollection<ISong> songs)
         {
+            foreach (var song in songs)
+            {
+                _playlistSongCount++;
+                song.Order = _playlistSongCount;
+            }
             PlayList.AddRange(songs);
             PublishEvent($"Added {songs.Count} songs to playlist");
         }
@@ -329,6 +337,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public void ClearPlayList()
         {
+            _playlistSongCount = 0;
             isManualStop = true;
             NextUp = null;
             Cleanup();
@@ -449,7 +458,7 @@ namespace BCode.MusicPlayer.Infrastructure
             UpdateSongTime();
         }
 
-        private ISong GetSongFromFile(int id, string path)
+        private ISong GetSongFromFile(string path)
         {
             ISong song;
 
@@ -464,9 +473,8 @@ namespace BCode.MusicPlayer.Infrastructure
                 using (TagLib.File file = TagLib.File.Create(new FileAbstraction(path)))
                 {
                     song = new Song();
-                    song.SongId = id;
-                    song.Order = 1;
-                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"Unknown Song {id.ToString()}";
+
+                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"Unknown Song {song.SongId}";
                     song.Path = path;
                     song.Extension = Path.GetExtension(path);
                     song.Size = file.Length;
@@ -513,14 +521,12 @@ namespace BCode.MusicPlayer.Infrastructure
                     {
                         return songList;
                     }
-
-                    int num = PlayList.Count > 0 ? PlayList.Count + 1 : 1;
+                    
                     foreach (var songFile in files)
                     {
-                        var s = GetSongFromFile(num, songFile);
+                        var s = GetSongFromFile(songFile);
                         if (s is not null)
                         {
-                            num++;
                             songList.Add(s);
                         }
 

@@ -11,7 +11,12 @@ namespace BCode.MusicPlayer.Infrastructure
     {
         private readonly int MAX_CHAR_LENGTH_BEFORE_TRUNCATE = 50;
 
-        public int SongId { get; set; }
+        public Song()
+        {
+            SongId = Guid.NewGuid();
+        }
+
+        public Guid SongId { get; }
 
         private string _name = "";
         public string Name
@@ -42,7 +47,7 @@ namespace BCode.MusicPlayer.Infrastructure
             set { _albumName = value; }
         }
 
-        public uint Order { get; set; }
+        public int Order { get; set; }
 
         private string _year = "";
         public string Year
