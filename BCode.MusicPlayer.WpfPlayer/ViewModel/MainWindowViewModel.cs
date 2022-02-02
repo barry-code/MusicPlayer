@@ -26,7 +26,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
             Player = player;
-            _logger = logger;            
+            _logger = logger;
+            _messageQueue.DiscardDuplicates = true;
 
             Player.PlayerEvent += HandlePlayerEvent;
 
@@ -98,7 +99,6 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         }
         
         public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
-
 
         private void Play()
         {
@@ -209,19 +209,12 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
 
                 _cancelTokenSource = new CancellationTokenSource();
+
                 IsLoading = true;
 
-                await Task.Run( () =>
-                {
-                    App.Current.Dispatcher.InvokeAsync(() =>
-                    {
-                        var files = dlg.FileNames;
-                        foreach (var file in files)
-                        {
-                            Player.AddSongToPlayList(file);
-                        }
-                    },DispatcherPriority.Normal,_cancelTokenSource.Token);
-                },_cancelTokenSource.Token);                
+                var files = dlg.FileNames;
+
+                await Player.AddSongsToPlayList(files, _cancelTokenSource.Token);
             }
             catch (Exception ex)
             {

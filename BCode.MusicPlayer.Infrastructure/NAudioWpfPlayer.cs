@@ -329,6 +329,13 @@ namespace BCode.MusicPlayer.Infrastructure
             AddSongsToPlayList(songs);
         }
 
+        public async Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongsCancelToken)
+        {
+            var songs = await GetSongsFromFiles(files, addSongsCancelToken);
+
+            AddSongsToPlayList(songs);
+        }
+
         public void RemoveSongFromPlayList(ISong song)
         {
             PlayList.Remove(song);
@@ -545,6 +552,49 @@ namespace BCode.MusicPlayer.Infrastructure
                 return songList;
 
             }, _mainCancelTokenSource.Token);
+
+            return songsFound;
+        }
+
+        private async Task<ICollection<ISong>> GetSongsFromFiles(ICollection<string> files, CancellationToken addSongsCancelToken)
+        {
+            var songsFound = new List<ISong>();
+
+            if (files is null)
+                return songsFound;
+
+            if (files.Count == 0)
+                return songsFound;
+
+            songsFound = await Task.Run(() =>
+            {
+                var songList = new List<ISong>();
+
+                try
+                {
+                    if (addSongsCancelToken.IsCancellationRequested)
+                        addSongsCancelToken.ThrowIfCancellationRequested();
+
+                    foreach (var file in files)
+                    {
+                        var s = GetSongFromFile(file);
+                        if (s is not null)
+                        {
+                            songList.Add(s);
+                        }
+
+                        if (addSongsCancelToken.IsCancellationRequested)
+                            addSongsCancelToken.ThrowIfCancellationRequested();
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    songList.Clear();
+                    PublishEvent("Cancelled getting songs");
+                }
+
+                return songList;
+            });            
 
             return songsFound;
         }

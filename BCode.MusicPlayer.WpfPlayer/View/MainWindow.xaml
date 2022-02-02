@@ -186,8 +186,8 @@
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
 
-                    <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" >
-                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding MessageQueue}" HorizontalAlignment="Stretch" />
+                    <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding MessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}"  Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" />
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
@@ -198,7 +198,6 @@
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>
-
 
             </Grid>
         </materialDesign:DialogHost>        
