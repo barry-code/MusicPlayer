@@ -21,13 +21,13 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     {
         private ILogger _logger;
         private CancellationTokenSource _cancelTokenSource;
-        private SnackbarMessageQueue _messageQueue = new SnackbarMessageQueue();
+        //private SnackbarMessageQueue _messageQueue = new SnackbarMessageQueue();
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
             Player = player;
             _logger = logger;
-            _messageQueue.DiscardDuplicates = true;
+            //_messageQueue.DiscardDuplicates = true;
 
             Player.PlayerEvent += HandlePlayerEvent;
 
@@ -72,7 +72,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public ReactiveCommand<Unit, Unit> SkipBackCmd { get; }
         public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
 
-        public SnackbarMessageQueue MessageQueue => _messageQueue;
+        //public SnackbarMessageQueue MessageQueue => _messageQueue;
 
         public IPlayer Player { get; private set; }
 
@@ -97,7 +97,14 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 SetSeekTime(_currentSongElapsedTime);                
             } 
         }
-        
+
+        private string _lastMessage;
+        public string LastMessage
+        {
+            get => _lastMessage;
+            set => this.RaiseAndSetIfChanged(ref _lastMessage, value);
+        }
+
         public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
 
         private void Play()
@@ -277,7 +284,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 if (ev.EventType == PlayerEvent.Type.Error)
                 {
                     _logger.LogError(ev.Message);
-                    _messageQueue.Enqueue(ev.Message,null,null,null,true,false,TimeSpan.FromSeconds(2));
+                    LastMessage = ev.Message;
+                    //_messageQueue.Enqueue(ev.Message,null,null,null,true,false,TimeSpan.FromSeconds(2));
                     return;
                 }
 
@@ -287,7 +295,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 }
 
                 _logger.LogInformation(ev.Message);
-                _messageQueue.Enqueue(ev.Message, null, null, null, false, false, TimeSpan.FromSeconds(1));
+                LastMessage = ev.Message;
+                //_messageQueue.Enqueue(ev.Message, null, null, null, false, false, TimeSpan.FromSeconds(1));
             }
         }
 
@@ -322,7 +331,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public void Dispose()
         {
             _cancelTokenSource?.Dispose();
-            _messageQueue?.Clear();
+            //_messageQueue?.Clear();
 
             if (Player is not null)
             {

@@ -212,7 +212,7 @@ namespace BCode.MusicPlayer.Infrastructure
         {
             _outputDevice.Play();
             Status = Status.Playing;
-            PublishEvent($"Resumed playing [{CurrentSong.Name}]");
+            PublishEvent($"Now playing [{CurrentSong.Name}]");
         }
 
         public void Next()

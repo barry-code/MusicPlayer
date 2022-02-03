@@ -184,10 +184,10 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="250"/>
-                    </Grid.ColumnDefinitions>
-
+                    </Grid.ColumnDefinitions>                   
                     <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding MessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}"  Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" />
+                        <!--<materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding MessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}"  Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" />-->
+                        <materialDesign:Snackbar Message="{Binding LastMessage}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActive="True" />
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
