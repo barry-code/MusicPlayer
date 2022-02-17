@@ -2,18 +2,15 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reactive;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.ComponentModel;
 using Microsoft.Extensions.Logging;
-using System.Threading;
 using MaterialDesignThemes.Wpf;
 using System.Reactive.Linq;
-using System.Windows.Threading;
+using Timer = System.Threading.Timer;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -21,24 +18,26 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     {
         private ILogger _logger;
         private CancellationTokenSource _cancelTokenSource;
-        //private SnackbarMessageQueue _messageQueue = new SnackbarMessageQueue();
+        private readonly int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
+        private SnackbarMessageQueue _notificationMessageQueue;
+        private Timer _notificationsFinishedTimer;
+        private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
             Player = player;
             _logger = logger;
-            //_messageQueue.DiscardDuplicates = true;
+            SetupNotifications();
 
             Player.PlayerEvent += HandlePlayerEvent;
 
-            _logger.LogDebug("Starting");
+            _logger.LogDebug("Starting Music Player");
 
             AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles);
             AddFolderCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist);
             ClearPlayListCmd = ReactiveCommand.Create(ClearPlaylist);
-            PlayCmd = ReactiveCommand.Create(Play);
+            PlayPauseCmd = ReactiveCommand.Create(PlayPause);
             PlaySongFromPlayListCmd = ReactiveCommand.Create<int>(PlaySongFromPlaylist);
-            PauseCmd = ReactiveCommand.Create(Pause);
             NextCmd = ReactiveCommand.Create(Next);
             PrevCmd = ReactiveCommand.Create(Previous);
             StopCmd = ReactiveCommand.Create(Stop);
@@ -46,33 +45,34 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             SkipBackCmd = ReactiveCommand.Create(SkipBack);
             CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
 
-            this.WhenAnyValue(x => x.Player.CurrentSong)
+            _subscriptions.Add(
+                this.WhenAnyValue(x => x.Player.CurrentSong)
                 .Where(x => x != null)
                 .DistinctUntilChanged()
                 .Subscribe((x) => {
                     UpdateSongTimes(true);
-                });
+                }));
 
-            this.WhenAnyValue(x => x.Player.CurrentElapsedTime)
+            _subscriptions.Add(
+                this.WhenAnyValue(x => x.Player.CurrentElapsedTime)
                 .WhereNotNull()
                 .DistinctUntilChanged()
-                .Subscribe((x) => { UpdateSongTimes(false); });
+                .Subscribe((x) => { 
+                    UpdateSongTimes(false); 
+                }));
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
         public ReactiveCommand<Unit, Unit> AddFolderCmd { get; }
         public ReactiveCommand<Unit, Unit> ClearPlayListCmd { get; }
-        public ReactiveCommand<Unit, Unit> PlayCmd { get; }
+        public ReactiveCommand<Unit, Unit> PlayPauseCmd { get; }
         public ReactiveCommand<int, Unit> PlaySongFromPlayListCmd { get; }
-        public ReactiveCommand<Unit, Unit> PauseCmd { get; }
         public ReactiveCommand<Unit, Unit> NextCmd { get; }
         public ReactiveCommand<Unit, Unit> PrevCmd { get; }
         public ReactiveCommand<Unit, Unit> StopCmd { get; }
         public ReactiveCommand<Unit, Unit> SkipAheadCmd { get; }
         public ReactiveCommand<Unit, Unit> SkipBackCmd { get; }
         public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
-
-        //public SnackbarMessageQueue MessageQueue => _messageQueue;
 
         public IPlayer Player { get; private set; }
 
@@ -98,37 +98,69 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             } 
         }
 
-        private string _lastMessage;
-        public string LastMessage
+        private string _currentStatusMessage;
+        public string CurrentStatusMessage
         {
-            get => _lastMessage;
-            set => this.RaiseAndSetIfChanged(ref _lastMessage, value);
+            get => _currentStatusMessage;
+            set => this.RaiseAndSetIfChanged(ref _currentStatusMessage, value);
+        }
+
+        private bool _showNotificationAlert;
+        public bool ShowNotificationAlert
+        {
+            get => _showNotificationAlert;
+            set => this.RaiseAndSetIfChanged(ref _showNotificationAlert, value);
         }
 
         public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
 
-        private void Play()
+        public SnackbarMessageQueue NotificationMessageQueue => _notificationMessageQueue;
+
+        public int NotificationsRemainingCount => _notificationMessageQueue.QueuedMessages.Count;
+
+        public void Dispose()
         {
             try
             {
+                _notificationMessageQueue?.Clear();
+                _notificationMessageQueue?.Dispose();
+
+                _cancelTokenSource?.Dispose();
+
+                foreach (var sub in _subscriptions)
+                {
+                    sub?.Dispose();
+                }
+
+                _subscriptions?.Clear();
+
+                if (Player is not null)
+                {
+                    Player.PlayerEvent -= HandlePlayerEvent;
+                    Player.Dispose();
+                }
+            }
+            catch (Exception)
+            {
+            }
+        }
+
+        private void PlayPause()
+        {
+            try
+            {
+                if (Player.IsPlaying)
+                {
+                    Player.Pause();
+                    return;
+                }
+
                 Player.Play();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
             }            
-        }
-
-        private void Pause()
-        {            
-            try
-            {
-                Player.Pause();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
         }
 
         private void Previous()
@@ -206,10 +238,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private async Task AddFiles() 
         {
             try
-            {
+            {                
                 var dlg = new OpenFileDialog();
                 dlg.Multiselect = true;
-                
+                dlg.Filter = GetAudioFilesFilterString();
+
                 var result = dlg.ShowDialog();
 
                 if (result != DialogResult.OK)
@@ -284,8 +317,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 if (ev.EventType == PlayerEvent.Type.Error)
                 {
                     _logger.LogError(ev.Message);
-                    LastMessage = ev.Message;
-                    //_messageQueue.Enqueue(ev.Message,null,null,null,true,false,TimeSpan.FromSeconds(2));
+                    ShowNotificationPopUp(ev.Message);
                     return;
                 }
 
@@ -294,9 +326,14 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
                 }
 
+                if (ev.Message.StartsWith("Added "))
+                {
+                    ShowNotificationPopUp(ev.Message);
+                    return;
+                }
+
                 _logger.LogInformation(ev.Message);
-                LastMessage = ev.Message;
-                //_messageQueue.Enqueue(ev.Message, null, null, null, false, false, TimeSpan.FromSeconds(1));
+                CurrentStatusMessage = ev.Message;
             }
         }
 
@@ -328,17 +365,40 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             }
         }
 
-        public void Dispose()
+        private void SetupNotifications()
         {
-            _cancelTokenSource?.Dispose();
-            //_messageQueue?.Clear();
+            _notificationMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(NOTIFICATION_POP_UP_DURATION_MILLISECONDS));
+            _notificationMessageQueue.DiscardDuplicates = true;
+            _notificationsFinishedTimer = new Timer(NotificationsFinished, null, Timeout.Infinite, Timeout.Infinite);
+        }
 
-            if (Player is not null)
+        public void HideNotificationsPopup()
+        {
+            _notificationsFinishedTimer.Change(500, Timeout.Infinite);
+        }
+
+        private void ShowNotificationPopUp(string msg) 
+        {                  
+            _notificationMessageQueue.Enqueue(msg);
+            ShowNotificationAlert = true;
+        }
+
+        private void NotificationsFinished(object state)
+        {            
+            ShowNotificationAlert = false;
+        }
+
+        private string GetAudioFilesFilterString()
+        {
+            var filterString = "";
+            if (Core.Constants.AudioFileExtensions.Count() == 0)
             {
-                Player.PlayerEvent -= HandlePlayerEvent;
-                Player.Dispose();
+                filterString = "*.*";
             }
-            
+
+            filterString = "Audio Files|" + string.Join(";", Core.Constants.AudioFileExtensions.Select(f => $"*{f}"));
+
+            return filterString;
         }
     }    
 }

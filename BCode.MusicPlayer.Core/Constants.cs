@@ -6,6 +6,6 @@ namespace BCode.MusicPlayer.Core
 {
     public static class Constants
     {
-        public static string[] AudioFileExtensions = { ".mp3", ".mp4", ".wav", ".wma" };
+        public static string[] AudioFileExtensions = { ".mp3", ".mp4", "m3u", "m4p", ".wav", ".wma", "wmv", ".flac" };
     }
 }

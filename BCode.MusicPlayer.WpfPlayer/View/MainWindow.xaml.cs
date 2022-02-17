@@ -75,5 +75,25 @@ namespace BCode.MusicPlayer.WpfPlayer.View
                 _logger.LogError(ex, "Error closing app");
             }
         }
+
+        private void snackBarMessages_IsActiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
+        {
+            try
+            {
+                bool isCurrentNotificationEnded = !e.NewValue;
+                bool isLastNotification = _viewModel.NotificationsRemainingCount == 1;
+
+                if (isCurrentNotificationEnded && isLastNotification)
+                {
+                    _viewModel.HideNotificationsPopup();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error working with notifications");
+            }
+            
+        }        
     }
 }
+   

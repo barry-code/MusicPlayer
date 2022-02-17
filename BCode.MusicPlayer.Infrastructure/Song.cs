@@ -60,31 +60,6 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public IList<Genre> Genres { get; set; } = new List<Genre>();
 
-        public override bool Equals(object obj)
-        {
-            var compareTo = obj as ISong;
-
-            if (compareTo is null)
-                return false;
-            
-            if ((compareTo.Name ?? String.Empty).Equals((this.Name ?? String.Empty), StringComparison.CurrentCultureIgnoreCase)
-                && (compareTo.ArtistName ?? String.Empty).Equals(this.ArtistName ?? String.Empty, StringComparison.CurrentCultureIgnoreCase)
-                && (compareTo.AlbumName ?? String.Empty).Equals(this.AlbumName ?? String.Empty, StringComparison.CurrentCultureIgnoreCase))
-                return true;
-
-            return false;
-        }
-
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
-        }
-
         private string Truncate(string s)
         {
             if (string.IsNullOrEmpty(s))

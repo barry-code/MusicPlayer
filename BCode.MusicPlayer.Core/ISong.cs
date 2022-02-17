@@ -17,8 +17,5 @@ namespace BCode.MusicPlayer.Core
         string Year { get; set; }
         TimeSpan Duration { get; set; }
         IList<Genre> Genres { get; set; }
-
-        bool Equals(object obj);
-
     }
 }
