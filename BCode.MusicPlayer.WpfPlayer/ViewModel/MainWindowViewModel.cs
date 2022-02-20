@@ -22,6 +22,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private SnackbarMessageQueue _notificationMessageQueue;
         private Timer _notificationsFinishedTimer;
         private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
+        private float _previousVolumeLevel;
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
@@ -44,6 +45,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             SkipAheadCmd = ReactiveCommand.Create(SkipAhead);
             SkipBackCmd = ReactiveCommand.Create(SkipBack);
             CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
+            MuteCmd = ReactiveCommand.Create(Mute);
+            UnMuteCmd = ReactiveCommand.Create(UnMute);
 
             _subscriptions.Add(
                 this.WhenAnyValue(x => x.Player.CurrentSong)
@@ -73,6 +76,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public ReactiveCommand<Unit, Unit> SkipAheadCmd { get; }
         public ReactiveCommand<Unit, Unit> SkipBackCmd { get; }
         public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
+        public ReactiveCommand<Unit, Unit> MuteCmd { get; }
+        public ReactiveCommand<Unit, Unit> UnMuteCmd { get; }
 
         public IPlayer Player { get; private set; }
 
@@ -305,6 +310,35 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+            }
+        }
+
+        private void Mute()
+        {
+            try
+            {
+                _previousVolumeLevel = Player.CurrentVolume;
+
+                Player.CurrentVolume = 0.0f;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+            }            
+        }
+
+        private void UnMute()
+        {            
+            try
+            {
+                if (_previousVolumeLevel > 0.0f)
+                {
+                    Player.CurrentVolume = _previousVolumeLevel;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
             }
         }
 

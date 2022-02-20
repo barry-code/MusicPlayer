@@ -22,7 +22,7 @@
 
     <Window.Resources>
         <infra:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <infra:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter"/>        
+        <infra:InvertedBooleanToVisibilityConverter x:Key="InvertedBooleanToVisibilityConverter"/>
     </Window.Resources>
 
     <Border CornerRadius="10" Background="{DynamicResource MaterialDesignPaper}">
@@ -191,11 +191,15 @@
                         <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding NotificationMessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActiveChanged="snackBarMessages_IsActiveChanged" />
                     </materialDesign:Card>
 
-                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="VolumeHigh" Height="30" Width="30" Margin="5,0" Visibility="{Binding Player.IsMuted, Converter={StaticResource InvertedBooleanToVisibilityConverter}}"/>
-                            <materialDesign:PackIcon Kind="VolumeOff" Height="30" Width="30" Margin="5,0" Visibility="{Binding Player.IsMuted, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                            <Slider Value="{Binding Player.CurrentVolume}" Width="180" VerticalAlignment="Center" Minimum="0" Maximum="100" />
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" UniformCornerRadius="80">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
+                            <Button Width="40" Visibility="{Binding Player.IsMuted, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Background="Transparent" Padding="0" BorderThickness="0" Command="{Binding MuteCmd}" >
+                                <materialDesign:PackIcon Kind="VolumeHigh" Height="30" Width="30" VerticalAlignment="Center" />
+                            </Button>
+                            <Button Width="40" Visibility="{Binding Player.IsMuted, Converter={StaticResource BooleanToVisibilityConverter}}" Background="Transparent" Padding="0" BorderThickness="0" Command="{Binding UnMuteCmd}" >
+                                <materialDesign:PackIcon Kind="VolumeOff" Height="30" Width="30" VerticalAlignment="Center" />
+                            </Button>                            
+                            <Slider Value="{Binding Player.CurrentVolume}" Width="170" VerticalAlignment="Center" Minimum="0" Maximum="100" Margin="5,0" />
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>
