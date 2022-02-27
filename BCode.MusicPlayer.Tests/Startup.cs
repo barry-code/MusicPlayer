@@ -13,7 +13,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IPlayer, NAudioWpfPlayer>();
+            services.AddSingleton<IPlayer, BCode.MusicPlayer.Infrastructure.WpfPlayer>();
         }
     }
 }

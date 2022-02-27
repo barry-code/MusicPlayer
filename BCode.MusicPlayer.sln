@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D05D5C25-188
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8692E81C-C0C8-491A-A932-C4462A962C53}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCode.MusicPlayer.WpfPlayerTests", "BCode.MusicPlayer.Tests\BCode.MusicPlayer.WpfPlayerTests.csproj", "{B635B235-0425-49BD-A3F8-8A5D4706C408}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.WpfPlayerTests", "BCode.MusicPlayer.Tests\BCode.MusicPlayer.WpfPlayerTests.csproj", "{B635B235-0425-49BD-A3F8-8A5D4706C408}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
