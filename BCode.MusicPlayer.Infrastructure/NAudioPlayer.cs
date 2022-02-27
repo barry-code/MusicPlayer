@@ -510,7 +510,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 {
                     song = new Song();
 
-                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"Unknown Song {song.SongId}";
+                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"{Path.GetFileNameWithoutExtension(file.Name)}";
                     song.Path = path;
                     song.Extension = Path.GetExtension(path);
                     song.Size = file.Length;

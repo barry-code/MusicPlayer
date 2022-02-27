@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using BCode.MusicPlayer.WpfPlayer.Shared;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BCode.MusicPlayer.WpfPlayer
+namespace BCode.MusicPlayer.WpfPlayer.Shared
 {
     public static class Log4NetLoggerFactory
     {
