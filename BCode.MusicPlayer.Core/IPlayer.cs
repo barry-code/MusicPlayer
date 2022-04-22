@@ -29,11 +29,10 @@ namespace BCode.MusicPlayer.Core
         void AddSongToPlayList(ISong song);
         void AddSongToPlayList(string filePath);
         void AddSongsToPlayList(ICollection<ISong> songs);
-        Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongscancelToken);
-        Task AddSongsToPlayList(string folderPath, CancellationToken addSongscancelToken);
+        Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongsCancelToken);
+        Task AddSongsToPlayList(string folderPath, CancellationToken addSongsCancelToken);
         void RemoveSongFromPlayList(ISong song);
-        void ClearPlayList();        
-        void VolumeUp();
-        void VolumeDown();        
+        void ClearPlayList();
+        void SetVolume(float volume);
     }
 }

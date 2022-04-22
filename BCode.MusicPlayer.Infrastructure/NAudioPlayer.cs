@@ -639,5 +639,10 @@ namespace BCode.MusicPlayer.Infrastructure
                 _outputDevice.Volume = actualVolume;
             }
         }
+
+        public void SetVolume(float volume)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

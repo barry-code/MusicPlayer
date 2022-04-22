@@ -10,6 +10,7 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using BCode.MusicPlayer.Core;
 using BCode.MusicPlayer.Infrastructure;
+using BCode.MusicPlayer.TestLibVlcInfra;
 using BCode.MusicPlayer.WpfPlayer.View;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
@@ -35,7 +36,7 @@ namespace BCode.MusicPlayer.WpfPlayer
 
             builder.ConfigureLog4NetLogging();
             builder.RegisterType<MainWindow>().As<IMainWindow>().SingleInstance();
-            builder.RegisterType<BCode.MusicPlayer.Infrastructure.WpfPlayer>().As<IPlayer>().SingleInstance();
+            builder.RegisterType<BCode.MusicPlayer.TestLibVlcInfra.WpfPlayer>().As<IPlayer>().SingleInstance();
 
             _container = builder.Build();
 

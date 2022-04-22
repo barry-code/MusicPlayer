@@ -19,11 +19,13 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Log4Net.AspNetCore" Version="6.0.0" />
     <PackageReference Include="ReactiveUI.WPF" Version="17.1.6" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
     <ProjectReference Include="..\BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj" />
+    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.TestLibVlcInfra.csproj" />
   </ItemGroup>
 
   <ItemGroup>
