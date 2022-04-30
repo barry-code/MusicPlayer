@@ -1,5 +1,5 @@
-﻿namespace BCode.MusicPlayer.TestLibVlcInfra
-{
+﻿namespace BCode.MusicPlayer.Infrastructure
+{ 
     public class FileAbstraction : TagLib.File.IFileAbstraction
     {
         public FileAbstraction(string file)

@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace BCode.MusicPlayer.TestLibVlcInfra
+namespace BCode.MusicPlayer.Infrastructure
 {
     public class WpfPlayer : LibVlcPlayer, INotifyPropertyChanged
     {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BCode.MusicPlayer.TestLibVlcInfra
+namespace BCode.MusicPlayer.Infrastructure
 {
     public class Song : ISong
     {

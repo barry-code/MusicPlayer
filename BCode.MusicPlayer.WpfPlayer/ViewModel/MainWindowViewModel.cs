@@ -1,15 +1,14 @@
 ﻿using BCode.MusicPlayer.Core;
 using ReactiveUI;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 using Microsoft.Extensions.Logging;
 using MaterialDesignThemes.Wpf;
 using System.Reactive.Linq;
+using System.Windows.Forms;
 using Timer = System.Threading.Timer;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel

@@ -29,7 +29,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
-    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.TestLibVlcInfra.csproj" />
+    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

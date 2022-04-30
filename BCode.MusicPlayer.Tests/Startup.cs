@@ -1,5 +1,5 @@
 ﻿using BCode.MusicPlayer.Core;
-using BCode.MusicPlayer.TestLibVlcInfra;
+using BCode.MusicPlayer.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IPlayer, BCode.MusicPlayer.TestLibVlcInfra.WpfPlayer>();
+            services.AddSingleton<IPlayer, Infrastructure.WpfPlayer>();
         }
     }
 }

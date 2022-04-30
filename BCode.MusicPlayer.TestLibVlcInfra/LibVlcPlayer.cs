@@ -1,7 +1,7 @@
 ﻿using BCode.MusicPlayer.Core;
 using LibVLCSharp.Shared;
 
-namespace BCode.MusicPlayer.TestLibVlcInfra
+namespace BCode.MusicPlayer.Infrastructure
 {
     public class LibVlcPlayer : IPlayer
     {

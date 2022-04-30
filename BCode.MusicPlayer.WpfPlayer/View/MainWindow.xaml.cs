@@ -14,7 +14,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using BCode.MusicPlayer.Infrastructure;
 using Microsoft.Extensions.Logging;
 using BCode.MusicPlayer.WpfPlayer.Shared;
 
