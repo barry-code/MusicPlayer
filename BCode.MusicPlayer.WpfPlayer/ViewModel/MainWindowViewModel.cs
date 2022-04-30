@@ -18,11 +18,9 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     {
         private ILogger _logger;
         private CancellationTokenSource _cancelTokenSource;
-        private readonly int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
+        private const int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
         private SnackbarMessageQueue _notificationMessageQueue;
         private Timer _notificationsFinishedTimer;
-        private readonly List<IDisposable> _subscriptions = new List<IDisposable>();
-        private float _previousVolumeLevel;
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
@@ -47,22 +45,6 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
             MuteCmd = ReactiveCommand.Create(Mute);
             UnMuteCmd = ReactiveCommand.Create(UnMute);
-
-            _subscriptions.Add(
-                this.WhenAnyValue(x => x.Player.CurrentSong)
-                .Where(x => x != null)
-                .DistinctUntilChanged()
-                .Subscribe((x) => {
-                    UpdateSongTimes(true);
-                }));
-
-            _subscriptions.Add(
-                this.WhenAnyValue(x => x.Player.CurrentElapsedTime)
-                .WhereNotNull()
-                .DistinctUntilChanged()
-                .Subscribe((x) => { 
-                    UpdateSongTimes(false); 
-                }));
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
@@ -88,19 +70,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             set => this.RaiseAndSetIfChanged(ref _isLoading, value);
         }
 
-        private int _currentSongElapsedTime;
-        public int CurrentSongElapsedTime 
+        private int _currentSongTimeSeconds;
+        public int CurrentSongTimeSeconds
         {
-            get 
-            { 
-                return (int)(Player?.CurrentElapsedTime.TotalSeconds ?? 0); 
-            }
-            
-            set
-            {
-                _currentSongElapsedTime = value;
-                SetSeekTime(_currentSongElapsedTime);                
-            } 
+            get => _currentSongTimeSeconds;
+            set => SetSeekTime(value);
         }
 
         private string _currentStatusMessage;
@@ -117,7 +91,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             set => this.RaiseAndSetIfChanged(ref _showNotificationAlert, value);
         }
 
-        public int CurrentSongMaxTime => (int)(Player?.CurrentSong?.Duration.TotalSeconds ?? 0);
+        public double CurrentSongMaxTime => Player?.CurrentSong?.Duration.TotalSeconds ?? 0;
 
         public SnackbarMessageQueue NotificationMessageQueue => _notificationMessageQueue;
 
@@ -127,17 +101,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                _notificationsFinishedTimer?.Dispose();
                 _notificationMessageQueue?.Clear();
                 _notificationMessageQueue?.Dispose();
 
                 _cancelTokenSource?.Dispose();
-
-                foreach (var sub in _subscriptions)
-                {
-                    sub?.Dispose();
-                }
-
-                _subscriptions?.Clear();
 
                 if (Player is not null)
                 {
@@ -317,9 +285,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
-                _previousVolumeLevel = Player.CurrentVolume;
-
-                Player.CurrentVolume = 0.0f;
+                Player.Mute();
             }
             catch (Exception ex)
             {
@@ -331,10 +297,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {            
             try
             {
-                if (_previousVolumeLevel > 0.0f)
-                {
-                    Player.CurrentVolume = _previousVolumeLevel;
-                }
+                Player.UnMute();
             }
             catch (Exception ex)
             {
@@ -348,10 +311,16 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             if (ev is not null)
             {
-                if (ev.EventType == PlayerEvent.Type.Error)
+                if (ev.EventType == PlayerEvent.Type.Information && ev.EventCategory == PlayerEvent.Category.TrackTimeChanged)
                 {
-                    _logger.LogError(ev.Message);
-                    ShowNotificationPopUp(ev.Message);
+                    var newTime = (int)(Player?.CurrentSongElapsedTime.TotalSeconds ?? 0);
+                    
+                    if (_currentSongTimeSeconds != newTime)
+                    {
+                        _currentSongTimeSeconds = newTime;
+                        this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
+                    }
+                                      
                     return;
                 }
 
@@ -366,6 +335,14 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
                 }
 
+                if (ev.EventType == PlayerEvent.Type.Error)
+                {
+                    _logger.LogError(ev.Message);
+                    ShowNotificationPopUp(ev.Message);
+                    return;
+                }
+
+                this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
                 _logger.LogInformation(ev.Message);
                 CurrentStatusMessage = ev.Message;
             }
@@ -375,16 +352,6 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             _cancelTokenSource.Cancel();
             IsLoading = false;
-        }
-
-        private void UpdateSongTimes(bool isNewSong)
-        {
-            if (isNewSong)
-            {
-                this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
-            }
-
-            this.RaisePropertyChanged(nameof(CurrentSongElapsedTime));
         }
 
         private void SetSeekTime(int songTimeInSeconds)

@@ -5,6 +5,7 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
 {
     public class LibVlcPlayer : IPlayer
     {
+        private bool _disposedValue;
         protected LibVLC _libVlc;
         protected MediaPlayer _mediaPlayer;
         protected CancellationTokenSource _mainCancelTokenSource;
@@ -12,10 +13,15 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
         protected const int MIN_VOLUME_PERCENT = 0;
         protected const int MAX_VOLUME_PERCENT = 100;
         protected int _playlistSongCount;
+        protected float _lastVolumeLevel = 0;
 
         public LibVlcPlayer()
         {
-            Initialize();
+
+            LibVLCSharp.Shared.Core.Initialize();
+
+            _libVlc = new LibVLC(enableDebugLogs: true);
+            _mediaPlayer = new MediaPlayer(_libVlc);
 
             _mainCancelTokenSource = new CancellationTokenSource();
 
@@ -27,7 +33,9 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
                 _mediaPlayer.EndReached += HandleEndReachedState;
                 _mediaPlayer.EncounteredError += HandlePlayBackError;
                 _mediaPlayer.TimeChanged += HandleTimeChanged;
-            }            
+            }
+
+            Initialize();
         }
 
         protected IList<ISong> _playlist;
@@ -73,14 +81,14 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             {
                 if (_currentVolume != value)
                 {
-                    if (value < 0)
+                    if (value < MIN_VOLUME_PERCENT)
                     {
-                        value = 0;
+                        value = MIN_VOLUME_PERCENT;
                         IsMuted = true;
                     }
 
-                    if (value > 100)
-                        value = 100;
+                    if (value > MAX_VOLUME_PERCENT)
+                        value = MAX_VOLUME_PERCENT;
 
                     _currentVolume = value;
                     AdjustPlayerVolume();
@@ -88,15 +96,15 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             }
         }
 
-        protected TimeSpan _currentElapsedTime;
-        public virtual TimeSpan CurrentElapsedTime
+        protected TimeSpan _currentSongElapsedTime;
+        public virtual TimeSpan CurrentSongElapsedTime
         {
-            get { return _currentElapsedTime; }
+            get { return _currentSongElapsedTime; }
             set
             {
-                if (_currentElapsedTime != value)
+                if (_currentSongElapsedTime != value)
                 {
-                    _currentElapsedTime = value;
+                    _currentSongElapsedTime = value;
                 }
             }
         }
@@ -110,15 +118,11 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
                 if (_isPlaying != value)
                 {
                     _isPlaying = value;
-                    if (_isPlaying)
-                    {
-                        PublishEvent($"Now playing [{CurrentSong.Name}]");
-                    }
                 }
             }
         }
 
-        protected bool _isMuted;
+        protected bool _isMuted;        
         public virtual bool IsMuted
         {
             get { return _isMuted; }
@@ -172,39 +176,12 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
 
         public virtual void ClearPlayList()
         {
-            _playlistSongCount = 0;
-            PlayList.Clear();
+            ClearSongs();
             PublishEvent("Cleared Playlist");
-        }
-
-        public virtual void Dispose()
-        {
-            if (_mediaPlayer is not null)
-            {
-                _mediaPlayer.Paused -= HandlePausedState;
-                _mediaPlayer.Stopped -= HandleStoppedState;
-                _mediaPlayer.Playing -= HandlePlayingState;
-                _mediaPlayer.EncounteredError -= HandlePlayBackError;
-                _mediaPlayer.TimeChanged -= HandleTimeChanged;
-            }            
-
-            _mediaPlayer?.Dispose();
-            _libVlc?.Dispose();
         }
 
         public virtual void Initialize()
         {
-            if (_mediaPlayer is not null)
-                _mediaPlayer.Dispose();
-
-            if (_libVlc is not null)
-                _libVlc.Dispose();
-            
-            LibVLCSharp.Shared.Core.Initialize();
-
-            _libVlc = new LibVLC(enableDebugLogs: true);
-            _mediaPlayer = new MediaPlayer(_libVlc);
-            
             CurrentVolume = 50;
         }
 
@@ -335,6 +312,8 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
                 return;
 
             _mediaPlayer?.Stop();
+
+            CurrentSong = null;
         }
 
         public virtual void SetVolume(float volume)
@@ -345,15 +324,33 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             CurrentVolume = volume;
         }        
 
+        public virtual void Mute()
+        {
+            if (_mediaPlayer is null)
+                return;
+
+            _lastVolumeLevel = CurrentVolume;
+
+            CurrentVolume = 0;
+        }
+
+        public virtual void UnMute()
+        {
+            if (_mediaPlayer is null)
+                return;
+
+            CurrentVolume = _lastVolumeLevel;
+        }
+
         protected ISong GetSongFromFile(string path)
         {
             ISong song;
 
             if (string.IsNullOrEmpty(path))
-                PublishEvent($"Cannot get song from empty file", Core.PlayerEvent.Type.Error, null);
+                PublishEvent($"Cannot get song from empty file", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, null);
 
             if (!File.Exists(path))
-                PublishEvent($"File not found [{path}]", Core.PlayerEvent.Type.Error, new FileNotFoundException(path));
+                PublishEvent($"File not found [{path}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, new FileNotFoundException(path));
 
             try
             {
@@ -375,7 +372,7 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             }
             catch (Exception ex)
             {
-                PublishEvent($"Error getting song information [{path}]", Core.PlayerEvent.Type.Error, ex);
+                PublishEvent($"Error getting song information [{path}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, ex);
                 return null;
             }
         }
@@ -481,18 +478,18 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
 
         protected void AdjustPlayerVolume()
         {
-            IsMuted = CurrentVolume <= 0;
+            IsMuted = CurrentVolume <= MIN_VOLUME_PERCENT;
 
             if (_mediaPlayer is not null)
                 _mediaPlayer.Volume = (int)CurrentVolume;
         }
 
-        protected void PublishEvent(string message, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Exception ex = null)
+        protected void PublishEvent(string message, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category category = Core.PlayerEvent.Category.PlayerState, Exception ex = null)
         {
             var errorDetails = (type == Core.PlayerEvent.Type.Error ? (ex is null ? string.Empty : ex.Message) : string.Empty);
             var msg = string.IsNullOrEmpty(errorDetails) ? message : message + " - " + errorDetails;
 
-            PlayerEvent?.Invoke(this, new PlayerEvent(msg, type));
+            PlayerEvent?.Invoke(this, new PlayerEvent(msg, type, category));
         }
 
         protected void HandlePausedState(object sender, EventArgs e)
@@ -529,7 +526,107 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             if (timeEvent is null)
                 return;
 
-            CurrentElapsedTime = TimeSpan.FromMilliseconds(timeEvent.Time);
+            CurrentSongElapsedTime = TimeSpan.FromMilliseconds(timeEvent.Time);
+
+            PublishEvent(CurrentSongElapsedTime.ToString(), Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category.TrackTimeChanged);
+        }
+
+        protected void Cleanup()
+        {
+            if (_mediaPlayer is not null)
+            {
+                _mediaPlayer.Paused -= HandlePausedState;
+                _mediaPlayer.Stopped -= HandleStoppedState;
+                _mediaPlayer.Playing -= HandlePlayingState;
+                _mediaPlayer.EncounteredError -= HandlePlayBackError;
+                _mediaPlayer.TimeChanged -= HandleTimeChanged;
+            }
+
+            if (_mediaPlayer is not null && _mediaPlayer.IsPlaying)
+            {
+                _mediaPlayer.Stop();
+            }
+
+            if (_mainCancelTokenSource is not null)
+            {
+                _mainCancelTokenSource.Dispose();
+            }
+
+            if (_mediaPlayer is not null)
+            {
+                try
+                {
+                    _mediaPlayer.Dispose();
+                }
+                catch (Exception)
+                {
+                }
+            }
+
+            if (_libVlc is not null)
+            {
+                try
+                {
+                    _libVlc.Dispose();
+                }
+                catch (Exception)
+                {
+                }                  
+            }
+        }
+
+        protected void ClearSongs()
+        {
+            if (CurrentSong is not null)
+            {
+                CurrentSong = null;
+            }
+
+            if (NextSong is not null)
+            {
+                NextSong = null;
+            }
+
+            if (PlayList is not null)
+            {
+                PlayList.Clear();
+            }
+
+            _playlistSongCount = 0;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+
+                    Cleanup();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+
+                ClearSongs();
+
+                _disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~LibVlcPlayer()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

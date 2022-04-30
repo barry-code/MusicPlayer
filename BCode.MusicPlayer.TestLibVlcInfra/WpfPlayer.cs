@@ -1,12 +1,7 @@
 ﻿using BCode.MusicPlayer.Core;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BCode.MusicPlayer.TestLibVlcInfra
 {
@@ -48,14 +43,13 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
 
             set
             {
-                if (value < 0)
+                if (value < MIN_VOLUME_PERCENT)
                 {
-                    value = 0;                    
+                    value = MIN_VOLUME_PERCENT;                    
                 }
-
-                if (value > 100)
+                else if (value > MAX_VOLUME_PERCENT)
                 {
-                    value = 100;
+                    value = MAX_VOLUME_PERCENT;
                 }
 
                 if (_currentVolume != value)
@@ -67,15 +61,15 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
             }
         }
 
-        public override TimeSpan CurrentElapsedTime
+        public override TimeSpan CurrentSongElapsedTime
         {
-            get { return _currentElapsedTime; }
+            get { return _currentSongElapsedTime; }
 
             set
             {
-                if (_currentElapsedTime != value)
+                if (_currentSongElapsedTime != value)
                 {
-                    _currentElapsedTime = value;
+                    _currentSongElapsedTime = value;
                     NotifyPropertyChanged();
                 }
             }
@@ -91,12 +85,7 @@ namespace BCode.MusicPlayer.TestLibVlcInfra
                 {
                     _isPlaying = value;
                     NotifyPropertyChanged();
-                    if (_isPlaying)
-                    {
-                        PublishEvent($"Now playing [{CurrentSong.Name}]");
-                    }
                 }
-
             }
         }
 

@@ -1,5 +1,4 @@
 ﻿using BCode.MusicPlayer.Core;
-using BCode.MusicPlayer.Infrastructure;
 using BCode.MusicPlayer.TestLibVlcInfra;
 using Microsoft.Extensions.DependencyInjection;
 using System;

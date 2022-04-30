@@ -10,7 +10,7 @@ namespace BCode.MusicPlayer.Core
         ISong CurrentSong { get; set; }
         Status Status { get; set; }
         float CurrentVolume { get; set; }
-        TimeSpan CurrentElapsedTime { get; set; }
+        TimeSpan CurrentSongElapsedTime { get; set; }
         public bool IsPlaying { get; set; }
         public bool IsMuted { get; set; }
 
@@ -34,5 +34,7 @@ namespace BCode.MusicPlayer.Core
         void RemoveSongFromPlayList(ISong song);
         void ClearPlayList();
         void SetVolume(float volume);
+        void Mute();
+        void UnMute();
     }
 }

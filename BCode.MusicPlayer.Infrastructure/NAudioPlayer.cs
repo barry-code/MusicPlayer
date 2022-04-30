@@ -120,6 +120,7 @@ namespace BCode.MusicPlayer.Infrastructure
             set { _isMuted = value; }
         }
 
+        public TimeSpan CurrentSongElapsedTime { get; set; }
 
         public virtual void Initialize()
         {            
@@ -641,6 +642,16 @@ namespace BCode.MusicPlayer.Infrastructure
         }
 
         public void SetVolume(float volume)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Mute()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void UnMute()
         {
             throw new NotImplementedException();
         }

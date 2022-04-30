@@ -10,15 +10,23 @@ namespace BCode.MusicPlayer.Core
     {
         public string Message { get; }
         public Type EventType { get; }
-        public DateTimeOffset TimeStamp { get; }
-        public TimeOnly LocalTime { get; }
+        public Category EventCategory { get; }
+        public DateTimeOffset TimeStampUtc { get; }
+        public DateTime TimeStampLocal { get; }
 
-        public PlayerEvent(string message, Type type = Type.Information)
+        public PlayerEvent(string message, Type type = Type.Information, Category category = Category.PlayerState)
         {
             Message = message;
             EventType = type;
-            TimeStamp = DateTimeOffset.UtcNow;
-            LocalTime = TimeOnly.FromDateTime(TimeStamp.LocalDateTime);
+            EventCategory = category;
+            TimeStampUtc = DateTimeOffset.UtcNow;
+            TimeStampLocal = TimeStampUtc.LocalDateTime;
+        }
+
+        public enum Category
+        {
+            PlayerState,
+            TrackTimeChanged
         }
 
         public enum Type

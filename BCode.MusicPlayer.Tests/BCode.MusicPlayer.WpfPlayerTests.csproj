@@ -8,7 +8,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibVLCSharp" Version="3.6.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="Xunit.DependencyInjection" Version="8.3.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
@@ -27,7 +29,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
-    <ProjectReference Include="..\BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj" />
     <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.TestLibVlcInfra.csproj" />
   </ItemGroup>
 
