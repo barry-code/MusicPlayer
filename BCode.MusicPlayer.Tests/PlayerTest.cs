@@ -14,66 +14,41 @@ namespace BCode.MusicPlayer.WpfPlayerTests
         private readonly string Good_Quality_Test_Files_Path = @"C:\temp\unit testing\music player\good quality songs";
         private readonly string Corrupted_Test_Files_Path = @"C:\temp\unit testing\music player\corrupted songs";
 
-        public PlayerTest(PlayerFixture fixture) //IPlayer player) 
+        public PlayerTest(PlayerFixture fixture)
         {
             _fixture = fixture;
-            //_fixture.Player.PlayerEvent += HandlePlayerEvent;
         }               
 
         [Fact]
-        public void VolumeZero_IsMutedShouldBeTrue()
+        public void Mute_IsMutedShouldBeTrueAndVolumeZero()
         {
             //arrange
             _fixture.Player.CurrentVolume = 0.5f;
 
             //act
-            _fixture.Player.CurrentVolume = 0f;
+            _fixture.Player.Mute();
 
             //assert
             Assert.True(_fixture.Player.IsMuted);
+            Assert.True(_fixture.Player.CurrentVolume <= 0);
         }
 
         [Fact]
-        public void VolumeNotZero_IsMutedShouldBeFalse()
+        public void UnMute_IsMutedShouldBeFalseAndVolumeReturnsToPreviousValue()
         {
 
-            //arrange
-            _fixture.Player.CurrentVolume = 0.0f;
+            //arrange            
+            _fixture.Player.CurrentVolume = 0.5f;
+            var previousVolume = _fixture.Player.CurrentVolume;
+            _fixture.Player.Mute();
 
             //act
-            _fixture.Player.CurrentVolume = 0.5f;
+            _fixture.Player.UnMute();            
 
             //assert
             Assert.False(_fixture.Player.IsMuted);
+            Assert.True(_fixture.Player.CurrentVolume == previousVolume);
         }
-
-        //[Fact]
-        //public void VolumeUp_VolumeShouldIncrease()
-        //{
-        //    //arrange
-        //    float initVolume = 0.0f;
-        //    _player.CurrentVolume = initVolume;
-
-        //    //act
-        //    _player.VolumeUp();
-
-        //    //assert
-        //    Assert.True(_player.CurrentVolume > initVolume); 
-        //}
-
-        //[Fact]
-        //public void VolumeDown_VolumeShouldDecrease()
-        //{
-        //    //arrange
-        //    float initVolume = 1.0f;
-        //    _player.CurrentVolume = initVolume;
-
-        //    //act
-        //    _player.VolumeDown();
-
-        //    //assert
-        //    Assert.True(_player.CurrentVolume < initVolume);
-        //}
 
         [Fact]
         public void AddSongsToPlaylist_SongsShouldBeAddedToPlayList()
@@ -298,6 +273,39 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             Assert.True(_fixture.Player.IsPlaying);
             Assert.True(_fixture.Player.Status == Status.Playing);
             Assert.True(_fixture.Player.CurrentSong == prevSong);
+        }
+
+        [Fact]
+        public void SkipTo_SongTimeShouldMoveToSpecifiedTime()
+        {
+            //Arrange
+            int secondsToSkipTo = 28;
+            _fixture.Player.ClearPlayList();
+            AddSampleSongsToPlayList();
+            _fixture.Player.Play();
+            Thread.Sleep(1000);
+
+            //Act
+            Thread.Sleep(1000);            
+            _fixture.Player.SkipTo(secondsToSkipTo);
+            _fixture.Player.Pause();
+
+           //Assert
+           Assert.True(_fixture.Player.CurrentSongElapsedTime.Seconds == secondsToSkipTo);
+        }
+
+        [Fact]
+        public void SetVolume_VolumeShouldMoveToSpecifiedVolume()
+        {
+            //Arrange
+            _fixture.Player.CurrentVolume = 0.9f;
+            var newVolume = 0.2f;
+
+            //Act
+            _fixture.Player.SetVolume(newVolume);
+
+            //Assert
+            Assert.True(_fixture.Player.CurrentVolume == newVolume);
         }
 
         private void SetupNewSamplePlayList(FileQuality quality = FileQuality.Good)
