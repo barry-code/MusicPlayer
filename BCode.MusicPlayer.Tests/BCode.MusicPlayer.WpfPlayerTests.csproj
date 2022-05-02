@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="mock\**" />
+    <EmbeddedResource Remove="mock\**" />
+    <None Remove="mock\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="LibVLCSharp" Version="3.6.6" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
     <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.16" />
@@ -24,12 +30,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="mock\" />
+    <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
+    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
-    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.Infrastructure.csproj" />
+    <None Update="samples\GoodQuality\audio-sample-1.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="samples\GoodQuality\audio-sample-2.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="samples\GoodQuality\audio-sample-3.mp3">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using Xunit;
 
@@ -11,8 +12,8 @@ namespace BCode.MusicPlayer.WpfPlayerTests
     public class PlayerTest : IClassFixture<PlayerFixture>
     {
         PlayerFixture _fixture;                
-        private readonly string Good_Quality_Test_Files_Path = @"C:\temp\unit testing\music player\good quality songs";
-        private readonly string Corrupted_Test_Files_Path = @"C:\temp\unit testing\music player\corrupted songs";
+        private readonly string Good_Quality_Test_Files_Path = @"samples\GoodQuality";
+        private readonly string Corrupted_Test_Files_Path = @"samples\BadQuality";
 
         public PlayerTest(PlayerFixture fixture)
         {
@@ -104,9 +105,11 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             //Arrange
             _fixture.Player.ClearPlayList();
             AddSampleSongsToPlayList();
+            Thread.Sleep(1000);
 
             //Act
             _fixture.Player.Play();
+            Thread.Sleep(1000);
 
             //Assert
             Assert.True(_fixture.Player.CurrentSong is not null);
@@ -141,6 +144,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             //Arrange
             _fixture.Player.ClearPlayList();
             AddSampleSongsToPlayList();
+            Thread.Sleep(1000);
             _fixture.Player.Play();
             _fixture.Player.SkipAhead();
             _fixture.Player.Pause();
@@ -331,9 +335,13 @@ namespace BCode.MusicPlayer.WpfPlayerTests
         {
             List<string> songFiles = new();
 
-            var path = quality == FileQuality.Corrupted ? Corrupted_Test_Files_Path : Good_Quality_Test_Files_Path;
+            var songDirectory = quality == FileQuality.Corrupted ? Corrupted_Test_Files_Path : Good_Quality_Test_Files_Path;
+            var assemblyLocation = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-            Directory.CreateDirectory(path);
+            if (string.IsNullOrEmpty(assemblyLocation))
+                throw new FileNotFoundException();
+
+            var path = Path.Combine(assemblyLocation, songDirectory);
 
             var foundSongs = Directory.EnumerateFiles(path, "*.*", SearchOption.TopDirectoryOnly).Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f))).ToList();
 
