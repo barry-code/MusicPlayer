@@ -15,4 +15,3 @@ https://github.com/mono/taglib-sharp
 MaterialDesignInXaml
 https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit
 
-![fix image](https://user-images.githubusercontent.com/60239072/166263535-6525775e-5247-4125-bb22-041ec8f2b88d.png)
