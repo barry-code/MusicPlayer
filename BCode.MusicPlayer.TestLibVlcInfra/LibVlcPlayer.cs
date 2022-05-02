@@ -14,6 +14,7 @@ namespace BCode.MusicPlayer.Infrastructure
         protected const int MAX_VOLUME_PERCENT = 100;
         protected int _playlistSongCount;
         protected float _lastVolumeLevel = 0;
+        private ILibraryManager _libraryManager;
 
         public LibVlcPlayer()
         {
