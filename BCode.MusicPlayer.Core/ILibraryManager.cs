@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace BCode.MusicPlayer.Core
 {
-    public interface ILibraryManager
+    public interface ILibraryManager : IDisposable
     {
-        Task<SongRetrievalResult> ListAllSongs(string folderPath, CancellationToken cancelToken);
+        Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken);
+        Task<SongRequestResult> GetAllSongs(ICollection<string> files, CancellationToken cancelToken);
+        ISong GetSongFromFile(string filePath);
         Task UpdateSong(ISong song);
     }
 }

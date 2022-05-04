@@ -107,6 +107,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
 
             //Act
             _fixture.Player.Play();
+            Thread.Sleep(1000);
 
             //Assert
             Assert.True(_fixture.Player.CurrentSong is not null);

@@ -9,24 +9,35 @@ namespace BCode.MusicPlayer.Infrastructure
 {
     public class LibraryManager : ILibraryManager
     {
-        protected CancellationTokenSource _mainCancelTokenSource;
+        private bool disposedValue;
+        private readonly CancellationTokenSource _mainCancelTokenSource;
+        private Task<SongRequestResult> _getSongsTask;
 
-        public async Task<SongRetrievalResult> ListAllSongs(string folderPath, CancellationToken cancelToken)
+        public LibraryManager()
         {
-            return await Task.Run(() =>
+            _mainCancelTokenSource = new CancellationTokenSource();
+        }
+
+        public async Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken)
+        {
+            if (_getSongsTask?.Status == TaskStatus.Running)
             {
-                var result = new SongRetrievalResult();
-                result.Songs = new List<ISong>();
+                _getSongsTask?.Wait();
+            }
+
+            _getSongsTask = Task.Run(() =>
+            {
+                var result = new SongRequestResult();
 
                 if (string.IsNullOrEmpty(folderPath))
                 {
-                    result.ErrorMessage = "Path cannot be empty";
+                    result.ErrorMessages.Add("Path cannot be empty");
                     return result;
                 }
 
                 if (!Directory.Exists(folderPath))
                 {
-                    result.ErrorMessage = $"Path not found {folderPath}";
+                    result.ErrorMessages.Add($"Path not found {folderPath}");
                     return result;
                 }
 
@@ -43,16 +54,23 @@ namespace BCode.MusicPlayer.Infrastructure
 
                     if (files is null || files?.Count == 0)
                     {
-                        result.ErrorMessage = $"No files found containing extensions {string.Join(",", Constants.AudioFileExtensions)}";
+                        result.ErrorMessages.Add($"No files found containing extensions {string.Join(",", Constants.AudioFileExtensions)}");
                         return result;
                     }
 
                     for (int i = 0; i < files?.Count; i++)
                     {
-                        var s = GetSongFromFile(files[i]);
-                        if (s is not null)
+                        try
                         {
-                            result.Songs.Add(s);
+                            var s = GetSongFromFile(files[i]);
+                            if (s is not null)
+                            {
+                                result.Songs.Add(s);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            result.ErrorMessages.Add(e.Message);
                         }
 
                         if (cancelToken.IsCancellationRequested)
@@ -64,14 +82,68 @@ namespace BCode.MusicPlayer.Infrastructure
                 catch (OperationCanceledException)
                 {
                     result.Songs.Clear();
-                    result.ErrorMessage = "Cancelled getting songs";
+                    result.ErrorMessages.Add("Cancelled getting songs");
                     return result;
                 }
 
-                result.IsSuccessful = true;
                 return result;
 
             }, _mainCancelTokenSource.Token);
+            
+            return await _getSongsTask;
+        }
+
+        public async Task<SongRequestResult> GetAllSongs(ICollection<string> files, CancellationToken cancelToken)
+        {
+            if (_getSongsTask?.Status == TaskStatus.Running)
+            {
+                _getSongsTask?.Wait();
+            }
+
+            _getSongsTask = Task.Run(() =>
+            {
+                var result = new SongRequestResult();
+
+                if (files is null)
+                    return result;
+
+                if (files.Count == 0)
+                    return result;
+
+                try
+                {
+                    if (cancelToken.IsCancellationRequested)
+                        cancelToken.ThrowIfCancellationRequested();
+
+                    foreach (var file in files)
+                    {
+                        try
+                        {
+                            var s = GetSongFromFile(file);
+                            if (s is not null)
+                            {
+                                result.Songs.Add(s);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            result.ErrorMessages.Add(ex.Message);
+                        }                        
+
+                        if (cancelToken.IsCancellationRequested)
+                            cancelToken.ThrowIfCancellationRequested();
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    result.Songs.Clear();
+                    result.ErrorMessages.Add("Cancelled getting songs");
+                }
+
+                return result;
+            }, _mainCancelTokenSource.Token);
+
+            return await _getSongsTask;
         }
 
         public Task UpdateSong(ISong song)
@@ -79,15 +151,15 @@ namespace BCode.MusicPlayer.Infrastructure
             return Task.CompletedTask;
         }
 
-        private ISong GetSongFromFile(string filePath)
+        public ISong GetSongFromFile(string filePath)
         {
             ISong song;
 
             if (string.IsNullOrEmpty(filePath))
-                PublishEvent($"Cannot get song from empty file", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, null);
+                throw new Exception($"Cannot get song from empty file");
 
             if (!File.Exists(filePath))
-                PublishEvent($"File not found [{filePath}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, new FileNotFoundException(filePath));
+                throw new Exception($"File not found [{filePath}]");
 
             try
             {
@@ -109,9 +181,41 @@ namespace BCode.MusicPlayer.Infrastructure
             }
             catch (Exception ex)
             {
-                PublishEvent($"Error getting song information [{filePath}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, ex);
-                return null;
+                throw new Exception($"{filePath} Error getting song information: {ex.Message}");
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: dispose managed state (managed objects)
+                    _mainCancelTokenSource?.Cancel();
+                    _getSongsTask?.Wait();
+                    _mainCancelTokenSource?.Dispose();
+                    _getSongsTask?.Dispose();
+                }
+
+                // TODO: free unmanaged resources (unmanaged objects) and override finalizer
+                // TODO: set large fields to null
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
+        // ~LibraryManager()
+        // {
+        //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }
