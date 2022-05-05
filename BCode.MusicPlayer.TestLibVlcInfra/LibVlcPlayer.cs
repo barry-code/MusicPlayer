@@ -140,7 +140,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 PlayList.Add(song);
             }
 
-            PublishEvent($"Added {songs.Count} songs to playlist");
+            PublishEvent($"Added {songs.Count} songs to playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual async Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongsCancelToken)
@@ -153,7 +153,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 return;
             }
 
-            PublishEvent(songsResult.Result, Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, null);
+            PublishEvent(songsResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
         public virtual async Task AddSongsToPlayList(string folderPath, CancellationToken addSongsCancelToken)
@@ -166,7 +166,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 return;
             }
 
-            PublishEvent(songResult.Result, Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, null);
+            PublishEvent(songResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
         public virtual void AddSongToPlayList(ISong song)
@@ -190,7 +190,7 @@ namespace BCode.MusicPlayer.Infrastructure
         {
             Stop();
             ClearSongs();
-            PublishEvent("Cleared Playlist");
+            PublishEvent("Cleared Playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual void Initialize()
@@ -280,7 +280,7 @@ namespace BCode.MusicPlayer.Infrastructure
         public virtual void RemoveSongFromPlayList(ISong song)
         {
             PlayList.Remove(song);
-            PublishEvent($"Removed song [{song.Name}] from playlist");
+            PublishEvent($"Removed song [{song.Name}] from playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual void SkipAhead()
@@ -363,7 +363,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 _mediaPlayer.Volume = (int)CurrentVolume;
         }
 
-        protected void PublishEvent(string message, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category category = Core.PlayerEvent.Category.PlayerState, Exception ex = null)
+        protected void PublishEvent(string message, Core.PlayerEvent.Category category = Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Exception ex = null)
         {
             var errorDetails = (type == Core.PlayerEvent.Type.Error ? (ex is null ? string.Empty : ex.Message) : string.Empty);
             var msg = string.IsNullOrEmpty(errorDetails) ? message : message + " - " + errorDetails;
@@ -386,7 +386,7 @@ namespace BCode.MusicPlayer.Infrastructure
         protected void HandlePlayingState(object sender, EventArgs e)
         {
             Status = Status.Playing;
-            PublishEvent($"Playing: {CurrentSong.Name}");
+            PublishEvent($"Playing: {CurrentSong.Name}", Core.PlayerEvent.Category.TrackUpdate);
         }
 
         protected void HandleEndReachedState(object sender, EventArgs e)
@@ -407,7 +407,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
             CurrentSongElapsedTime = TimeSpan.FromMilliseconds(timeEvent.Time);
 
-            PublishEvent(CurrentSongElapsedTime.ToString(), Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category.TrackTimeChanged);
+            PublishEvent(CurrentSongElapsedTime.ToString(), Core.PlayerEvent.Category.TrackTimeUpdate, Core.PlayerEvent.Type.Information);
         }
 
         protected void Cleanup()

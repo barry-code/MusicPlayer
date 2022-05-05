@@ -199,6 +199,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CurrentStatusMessage = "";
                 Player.ClearPlayList();
             }
             catch (Exception ex)
@@ -310,7 +311,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             if (ev is not null)
             {
-                if (ev.EventType == PlayerEvent.Type.Information && ev.EventCategory == PlayerEvent.Category.TrackTimeChanged)
+                if (ev.EventCategory == PlayerEvent.Category.TrackTimeUpdate)
                 {
                     var newTime = (int)(Player?.CurrentSongElapsedTime.TotalSeconds ?? 0);
                     
@@ -328,7 +329,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
                 }
 
-                if (ev.Message.StartsWith("Added "))
+                if (ev.EventCategory == PlayerEvent.Category.PlayListUpdate)
                 {
                     ShowNotificationPopUp(ev.Message);
                     return;
@@ -341,7 +342,13 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
                 }
 
-                this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
+                if (ev.EventCategory == PlayerEvent.Category.TrackUpdate)
+                {
+                    this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
+                    _currentSongTimeSeconds = 0;
+                    this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
+                }
+                
                 _logger.LogInformation(ev.Message);
                 CurrentStatusMessage = ev.Message;
             }
