@@ -65,34 +65,34 @@
 
                 <Grid Grid.Row="1" Margin="5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.5*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="2*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="1.5*" />
+                        <ColumnDefinition Width="1.5*" MinWidth="80" />
+                        <ColumnDefinition Width="*" MinWidth="80" />
+                        <ColumnDefinition Width="2*" MinWidth="100" />
+                        <ColumnDefinition Width="*" MinWidth="80" />
+                        <ColumnDefinition Width="1.5*" MinWidth="80" />
                     </Grid.ColumnDefinitions>
 
                     <Button Grid.Column="0" x:Name="prevBtn" Command="{Binding PrevCmd}" Height="Auto" Width="Auto" Margin="10,0" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:PackIcon Kind="SkipPrevious"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80"/>
+                        <materialDesign:PackIcon Kind="SkipPrevious"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" MinWidth="40"/>
                     </Button>
 
                     <Button Grid.Column="1" x:Name="skipBackBtn" Command="{Binding SkipBackCmd}" Height="Auto" Width="Auto" Margin="10,0" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:PackIcon Kind="Rewind"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80"/>
+                        <materialDesign:PackIcon Kind="Rewind"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" MinWidth="30"/>
                     </Button>
 
                     <Button Grid.Column="2" x:Name="playPauseBtn" Command="{Binding PlayPauseCmd}" Height="Auto" Width="Auto" Margin="10,0"  Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="Play" Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" Visibility="{Binding Player.IsPlaying, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
                             <materialDesign:PackIcon Kind="Pause" Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" Visibility="{Binding Player.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </StackPanel>                        
                     </Button>
 
                     <Button Grid.Column="3" x:Name="skipForwardBtn" Command="{Binding SkipAheadCmd}" Height="Auto" Width="Auto" Margin="10,0" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:PackIcon Kind="FastForward" Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80"/>
+                        <materialDesign:PackIcon Kind="FastForward" Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" MinWidth="30"/>
                     </Button>
 
                     <Button Grid.Column="4" x:Name="nextBtn" Command="{Binding NextCmd}" Height="Auto" Width="Auto" Margin="10,0" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:PackIcon Kind="SkipNext"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80"/>
+                        <materialDesign:PackIcon Kind="SkipNext"  Height="Auto" Width="Auto" MaxHeight="80" MaxWidth="80" MinWidth="40"/>
                     </Button>
                 </Grid>
 
