@@ -8,22 +8,22 @@ namespace BCode.MusicPlayer.Infrastructure
         private bool _disposedValue;
         protected LibVLC _libVlc;
         protected MediaPlayer _mediaPlayer;
-        protected CancellationTokenSource _mainCancelTokenSource;
+        
         protected const int SKIP_INTERVAL_SECONDS = 10;
         protected const int MIN_VOLUME_PERCENT = 0;
         protected const int MAX_VOLUME_PERCENT = 100;
         protected int _playlistSongCount;
         protected float _lastVolumeLevel = 0;
+        private ILibraryManager _libraryManager;
 
         public LibVlcPlayer()
         {
+            _libraryManager = new LibraryManager();
 
             LibVLCSharp.Shared.Core.Initialize();
 
             _libVlc = new LibVLC(enableDebugLogs: true);
             _mediaPlayer = new MediaPlayer(_libVlc);
-
-            _mainCancelTokenSource = new CancellationTokenSource();
 
             if (_mediaPlayer is not null)
             {
@@ -140,21 +140,33 @@ namespace BCode.MusicPlayer.Infrastructure
                 PlayList.Add(song);
             }
 
-            PublishEvent($"Added {songs.Count} songs to playlist");
+            PublishEvent($"Added {songs.Count} songs to playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual async Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongsCancelToken)
         {
-            var songs = await GetSongsFromFiles(files, addSongsCancelToken);
+            var songsResult = await _libraryManager.GetAllSongs(files, addSongsCancelToken);
 
-            AddSongsToPlayList(songs);
+            if (songsResult.IsSuccessful)
+            {
+                AddSongsToPlayList(songsResult.Songs);
+                return;
+            }
+
+            PublishEvent(songsResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
         public virtual async Task AddSongsToPlayList(string folderPath, CancellationToken addSongsCancelToken)
         {
-            var songs = await GetSongsFromFolder(folderPath, addSongsCancelToken);
+            var songResult = await _libraryManager.GetAllSongs(folderPath, addSongsCancelToken);
 
-            AddSongsToPlayList(songs);
+            if (songResult.IsSuccessful)
+            {
+                AddSongsToPlayList(songResult.Songs);
+                return;
+            }
+
+            PublishEvent(songResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
         public virtual void AddSongToPlayList(ISong song)
@@ -166,7 +178,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void AddSongToPlayList(string filePath)
         {
-            var song = GetSongFromFile(filePath);
+            var song = _libraryManager.GetSongFromFile(filePath);
 
             if (song is not null)
             {
@@ -176,8 +188,9 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void ClearPlayList()
         {
+            Stop();
             ClearSongs();
-            PublishEvent("Cleared Playlist");
+            PublishEvent("Cleared Playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual void Initialize()
@@ -267,7 +280,7 @@ namespace BCode.MusicPlayer.Infrastructure
         public virtual void RemoveSongFromPlayList(ISong song)
         {
             PlayList.Remove(song);
-            PublishEvent($"Removed song [{song.Name}] from playlist");
+            PublishEvent($"Removed song [{song.Name}] from playlist", Core.PlayerEvent.Category.PlayListUpdate);
         }
 
         public virtual void SkipAhead()
@@ -342,140 +355,6 @@ namespace BCode.MusicPlayer.Infrastructure
             CurrentVolume = _lastVolumeLevel;
         }
 
-        protected ISong GetSongFromFile(string path)
-        {
-            ISong song;
-
-            if (string.IsNullOrEmpty(path))
-                PublishEvent($"Cannot get song from empty file", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, null);
-
-            if (!File.Exists(path))
-                PublishEvent($"File not found [{path}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, new FileNotFoundException(path));
-
-            try
-            {
-                using (TagLib.File file = TagLib.File.Create(new FileAbstraction(path)))
-                {
-                    song = new Song();
-
-                    song.Name = !string.IsNullOrEmpty(file.Tag.Title) ? file.Tag.Title : $"{Path.GetFileNameWithoutExtension(file.Name)}";
-                    song.Path = path;
-                    song.Extension = Path.GetExtension(path);
-                    song.Size = file.Length;
-                    song.ArtistName = string.IsNullOrEmpty(file.Tag.FirstPerformer) ? file.Tag.FirstAlbumArtistSort : file.Tag.FirstPerformer;
-                    song.AlbumName = string.IsNullOrEmpty(file.Tag.Album) ? file.Tag.AlbumSort : file.Tag.Album;
-                    song.Year = file.Tag.Year == 0 ? String.Empty : file.Tag.Year.ToString();
-                    song.Duration = file.Properties.Duration;
-                }
-
-                return song;
-            }
-            catch (Exception ex)
-            {
-                PublishEvent($"Error getting song information [{path}]", Core.PlayerEvent.Type.Error, Core.PlayerEvent.Category.PlayerState, ex);
-                return null;
-            }
-        }
-
-        protected async Task<ICollection<ISong>> GetSongsFromFolder(string folderPath, CancellationToken addSongsCancelToken)
-        {
-            var songsFound = new List<ISong>();
-
-            if (string.IsNullOrEmpty(folderPath))
-            {
-                return songsFound;
-            }
-
-            songsFound = await Task.Run(() =>
-            {
-                var songList = new List<ISong>();
-
-                try
-                {
-                    if (addSongsCancelToken.IsCancellationRequested)
-                    {
-                        addSongsCancelToken.ThrowIfCancellationRequested();
-                    }
-
-                    var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
-                            .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f), StringComparer.CurrentCultureIgnoreCase))
-                            .ToList();
-
-                    if (files is null || files?.Count == 0)
-                    {
-                        return songList;
-                    }
-
-                    foreach (var songFile in files)
-                    {
-                        var s = GetSongFromFile(songFile);
-                        if (s is not null)
-                        {
-                            songList.Add(s);
-                        }
-
-                        if (addSongsCancelToken.IsCancellationRequested)
-                        {
-                            addSongsCancelToken.ThrowIfCancellationRequested();
-                        }
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    songList.Clear();
-                    PublishEvent("Cancelled getting songs");
-                }
-
-                return songList;
-
-            }, _mainCancelTokenSource.Token);
-
-            return songsFound;
-        }
-
-        protected async Task<ICollection<ISong>> GetSongsFromFiles(ICollection<string> files, CancellationToken addSongsCancelToken)
-        {
-            var songsFound = new List<ISong>();
-
-            if (files is null)
-                return songsFound;
-
-            if (files.Count == 0)
-                return songsFound;
-
-            songsFound = await Task.Run(() =>
-            {
-                var songList = new List<ISong>();
-
-                try
-                {
-                    if (addSongsCancelToken.IsCancellationRequested)
-                        addSongsCancelToken.ThrowIfCancellationRequested();
-
-                    foreach (var file in files)
-                    {
-                        var s = GetSongFromFile(file);
-                        if (s is not null)
-                        {
-                            songList.Add(s);
-                        }
-
-                        if (addSongsCancelToken.IsCancellationRequested)
-                            addSongsCancelToken.ThrowIfCancellationRequested();
-                    }
-                }
-                catch (OperationCanceledException)
-                {
-                    songList.Clear();
-                    PublishEvent("Cancelled getting songs");
-                }
-
-                return songList;
-            });
-
-            return songsFound;
-        }
-
         protected void AdjustPlayerVolume()
         {
             IsMuted = CurrentVolume <= MIN_VOLUME_PERCENT;
@@ -484,7 +363,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 _mediaPlayer.Volume = (int)CurrentVolume;
         }
 
-        protected void PublishEvent(string message, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category category = Core.PlayerEvent.Category.PlayerState, Exception ex = null)
+        protected void PublishEvent(string message, Core.PlayerEvent.Category category = Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type type = Core.PlayerEvent.Type.Information, Exception ex = null)
         {
             var errorDetails = (type == Core.PlayerEvent.Type.Error ? (ex is null ? string.Empty : ex.Message) : string.Empty);
             var msg = string.IsNullOrEmpty(errorDetails) ? message : message + " - " + errorDetails;
@@ -507,7 +386,7 @@ namespace BCode.MusicPlayer.Infrastructure
         protected void HandlePlayingState(object sender, EventArgs e)
         {
             Status = Status.Playing;
-            PublishEvent($"Playing: {CurrentSong.Name}");
+            PublishEvent($"Playing: {CurrentSong.Name}", Core.PlayerEvent.Category.TrackUpdate);
         }
 
         protected void HandleEndReachedState(object sender, EventArgs e)
@@ -528,11 +407,16 @@ namespace BCode.MusicPlayer.Infrastructure
 
             CurrentSongElapsedTime = TimeSpan.FromMilliseconds(timeEvent.Time);
 
-            PublishEvent(CurrentSongElapsedTime.ToString(), Core.PlayerEvent.Type.Information, Core.PlayerEvent.Category.TrackTimeChanged);
+            PublishEvent(CurrentSongElapsedTime.ToString(), Core.PlayerEvent.Category.TrackTimeUpdate, Core.PlayerEvent.Type.Information);
         }
 
         protected void Cleanup()
         {
+            if (_libraryManager is not null)
+            {
+                _libraryManager.Dispose();
+            }            
+
             if (_mediaPlayer is not null)
             {
                 _mediaPlayer.Paused -= HandlePausedState;
@@ -545,11 +429,6 @@ namespace BCode.MusicPlayer.Infrastructure
             if (_mediaPlayer is not null && _mediaPlayer.IsPlaying)
             {
                 _mediaPlayer.Stop();
-            }
-
-            if (_mainCancelTokenSource is not null)
-            {
-                _mainCancelTokenSource.Dispose();
             }
 
             if (_mediaPlayer is not null)

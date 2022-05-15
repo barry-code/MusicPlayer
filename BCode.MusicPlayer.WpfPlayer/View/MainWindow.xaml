@@ -155,7 +155,7 @@
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                         <DataGrid x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Id" Binding="{Binding Order}" IsReadOnly="True" />
+                                <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Song" Binding="{Binding Name}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Artist" Binding="{Binding ArtistName}" IsReadOnly="True" />
                                 <DataGridTextColumn Header="Album" Binding="{Binding AlbumName}" IsReadOnly="True" />

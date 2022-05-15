@@ -26,7 +26,9 @@ namespace BCode.MusicPlayer.Core
         public enum Category
         {
             PlayerState,
-            TrackTimeChanged
+            TrackTimeUpdate,
+            TrackUpdate,
+            PlayListUpdate
         }
 
         public enum Type
