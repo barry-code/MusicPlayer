@@ -13,7 +13,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{8692E81C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.WpfPlayerTests", "BCode.MusicPlayer.Tests\BCode.MusicPlayer.WpfPlayerTests.csproj", "{B635B235-0425-49BD-A3F8-8A5D4706C408}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.Infrastructure", "BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.Infrastructure.csproj", "{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.Infrastructure", "BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj", "{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCode.MusicPlayer.WebPlayer", "BCode.MusicPlayer.WebPlayer\BCode.MusicPlayer.WebPlayer.csproj", "{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}"
 EndProject
