@@ -1,0 +1,80 @@
+﻿@page "/"
+@using BCode.MusicPlayer.Infrastructure
+@using BCode.MusicPlayer.WebPlayer.Data
+
+<PageTitle>My Music Player</PageTitle>
+
+@inject WebPlayer Player
+@inject PlayerData PlayerData
+
+<p>Message: @PlayerData.LastMessage</p>
+
+<button class="btn btn-primary" @onclick="Previous">PREV</button>
+<button class="btn btn-primary" @onclick="Play">PLAY</button>
+<button class="btn btn-primary" @onclick="Pause">PAUSE</button>
+<button class="btn btn-primary" @onclick="Next">NEXT</button>
+
+
+@*<SurveyPrompt Title="How is Blazor working for you?" />*@
+@if (Player.CurrentSong is not null)
+{
+    <p>Track:@Player.CurrentSong.Name</p>
+    <p>Location: @Player.CurrentSong.Path</p>
+    <p>Duration: @Player.CurrentSong.Duration.ToString()</p>
+}
+else
+{
+    <p>Track: </p>
+    <p>Location: </p>
+    <p>Duration: </p>
+}
+
+@code{
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (PlayerData.IsInitialized)
+            return;
+
+        try
+        {
+            var testFolder = @"W:\Andrew WK\I Get Wet";
+
+            await Player.AddSongsToPlayList(testFolder, PlayerData.CancelTokenSource.Token);
+
+            var songs = Player.PlayList.Count;
+            PlayerData.LastMessage = $"{songs} songs loaded";
+
+            PlayerData.IsInitialized = true;
+        }
+        catch(Exception ex)
+        {
+            PlayerData.LastMessage = ex.Message;  
+        }
+    }
+
+    private void Play()
+    {
+        PlayerData.LastMessage = "play pressed";
+        Player.Play();
+    }
+
+    private void Pause()
+    {
+        PlayerData.LastMessage = "pause pressed";
+        Player.Pause();
+    }
+
+    private void Next()
+    {
+        PlayerData.LastMessage = "next pressed";
+        Player.Next();
+    }
+
+    private void Previous()
+    {
+        PlayerData.LastMessage = "previous pressed";
+        Player.Previous();
+    }
+}
+
