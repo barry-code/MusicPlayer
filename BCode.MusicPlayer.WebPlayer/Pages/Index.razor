@@ -10,7 +10,7 @@
 <p>Message: @PlayerData.LastMessage</p>
 
 <button class="btn btn-primary" @onclick="Previous">PREV</button>
-<button class="btn btn-primary" @onclick="Play">PLAY</button>
+<button class="btn btn-primary" @onclick="Play" hidden=@Player.IsPlaying>PLAY</button>
 <button class="btn btn-primary" @onclick="Pause">PAUSE</button>
 <button class="btn btn-primary" @onclick="Next">NEXT</button>
 
@@ -20,7 +20,8 @@
 {
     <p>Track:@Player.CurrentSong.Name</p>
     <p>Location: @Player.CurrentSong.Path</p>
-    <p>Duration: @Player.CurrentSong.Duration.ToString()</p>
+    <p>Duration: @Player.CurrentSong.Duration.ToString(@"hh\:mm\:ss")</p>
+    <p>Elapsed: @Player.CurrentSongElapsedTime.ToString(@"hh\:mm\:ss")</p>
 }
 else
 {
@@ -29,7 +30,32 @@ else
     <p>Duration: </p>
 }
 
+<table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Song</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var song in Player.PlayList)
+            {
+                <tr>
+                    <td>@song.Order</td>
+                    <td>@song.Name</td>
+                    <td>@song.ArtistName</td>
+                    <td>@song.AlbumName</td>
+                    <td>@song.Path</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
 @code{
+    public bool IsNotPlaying => Player?.IsPlaying ?? false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -55,26 +81,54 @@ else
 
     private void Play()
     {
-        PlayerData.LastMessage = "play pressed";
-        Player.Play();
+        try
+        {
+            PlayerData.LastMessage = "play pressed";
+            Player?.Play();
+        }
+        catch(Exception ex)
+        {
+            PlayerData.LastMessage = ex.Message;  
+        }
     }
 
     private void Pause()
     {
-        PlayerData.LastMessage = "pause pressed";
-        Player.Pause();
+        try
+        {
+            PlayerData.LastMessage = "pause pressed";
+            Player?.Pause();
+        }
+        catch(Exception ex)
+        {
+            PlayerData.LastMessage = ex.Message;  
+        }
     }
 
     private void Next()
     {
-        PlayerData.LastMessage = "next pressed";
-        Player.Next();
+        try
+        {
+            PlayerData.LastMessage = "next pressed";
+            Player?.Next();
+        }
+        catch(Exception ex)
+        {
+            PlayerData.LastMessage = ex.Message;  
+        }
     }
 
     private void Previous()
     {
-        PlayerData.LastMessage = "previous pressed";
-        Player.Previous();
+        try
+        {
+            PlayerData.LastMessage = "previous pressed";
+            Player?.Previous();
+        }
+        catch(Exception ex)
+        {
+            PlayerData.LastMessage = ex.Message;  
+        }
     }
 }
 

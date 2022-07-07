@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\BCode.MusicPlayer.TestLibVlcInfra\BCode.MusicPlayer.Infrastructure.csproj" />
+    <ProjectReference Include="..\BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
