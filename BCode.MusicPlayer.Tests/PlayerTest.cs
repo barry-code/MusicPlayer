@@ -80,7 +80,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             _fixture.Player.RemoveSongFromPlayList(song);
 
             //assert
-            Assert.DoesNotContain<ISong>(song, _fixture.Player.PlayList);
+            Assert.DoesNotContain<Song>(song, _fixture.Player.PlayList);
         }
 
         [Fact]

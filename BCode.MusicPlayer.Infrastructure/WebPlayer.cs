@@ -9,6 +9,6 @@ namespace BCode.MusicPlayer.Infrastructure
 {
     public class WebPlayer : LibVlcPlayer
     {
-        public override IList<ISong> PlayList { get; set; } = new List<ISong>();
+        public override IList<Song> PlayList { get; set; } = new List<Song>();
     }
 }

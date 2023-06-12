@@ -1,13 +1,6 @@
-﻿using BCode.MusicPlayer.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BCode.MusicPlayer.Infrastructure
+﻿namespace BCode.MusicPlayer.Core
 {
-    public class Song : ISong
+    public class Song
     {
         private readonly int MAX_CHAR_LENGTH_BEFORE_TRUNCATE = 50;
 

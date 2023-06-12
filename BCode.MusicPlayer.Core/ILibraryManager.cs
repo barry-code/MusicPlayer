@@ -10,7 +10,7 @@ namespace BCode.MusicPlayer.Core
     {
         Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken);
         Task<SongRequestResult> GetAllSongs(ICollection<string> files, CancellationToken cancelToken);
-        ISong GetSongFromFile(string filePath);
-        Task UpdateSong(ISong song);
+        Song GetSongFromFile(string filePath);
+        Task UpdateSong(Song song);
     }
 }

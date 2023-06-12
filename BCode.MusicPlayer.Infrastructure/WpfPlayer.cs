@@ -9,9 +9,9 @@ namespace BCode.MusicPlayer.Infrastructure
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public override IList<ISong> PlayList { get; set; } = new ObservableCollection<ISong>();
+        public override IList<Song> PlayList { get; set; } = new ObservableCollection<Song>();
 
-        public override ISong CurrentSong
+        public override Song CurrentSong
         {
             get { return _currentSong; }
 

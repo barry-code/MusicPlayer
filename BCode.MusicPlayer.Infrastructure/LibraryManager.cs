@@ -1,9 +1,4 @@
 ﻿using BCode.MusicPlayer.Core;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BCode.MusicPlayer.Infrastructure
 {
@@ -146,14 +141,14 @@ namespace BCode.MusicPlayer.Infrastructure
             return await _getSongsTask;
         }
 
-        public Task UpdateSong(ISong song)
+        public Task UpdateSong(Song song)
         {
             return Task.CompletedTask;
         }
 
-        public ISong GetSongFromFile(string filePath)
+        public Song GetSongFromFile(string filePath)
         {
-            ISong song;
+            Song song;
 
             if (string.IsNullOrEmpty(filePath))
                 throw new Exception($"Cannot get song from empty file");
@@ -181,8 +176,31 @@ namespace BCode.MusicPlayer.Infrastructure
             }
             catch (Exception ex)
             {
-                throw new Exception($"{filePath} Error getting song information: {ex.Message}");
+                try
+                {
+                    return GetSongInfoFallbackMethod(filePath);
+                }
+                catch (Exception ex2)                
+                {
+                    throw new Exception($"{filePath} Error getting song information 1st attempt: {ex.Message}. 2nd attempt: {ex2.Message}");
+                }
             }
+        }
+
+        private Song GetSongInfoFallbackMethod(string filePath)
+        {
+            var fileInfo = new FileInfo(filePath);
+            var song = new Song();
+
+            song.Name = $"{Path.GetFileNameWithoutExtension(filePath)}";
+            song.Path = filePath;
+            song.Extension = Path.GetExtension(filePath);
+            song.Size = fileInfo.Length;
+            song.ArtistName = "Unknown";
+            song.AlbumName = "Unknown";
+            song.Year = "";
+
+            return song;
         }
 
         protected virtual void Dispose(bool disposing)

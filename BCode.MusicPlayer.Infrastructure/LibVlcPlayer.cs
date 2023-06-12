@@ -38,22 +38,22 @@ namespace BCode.MusicPlayer.Infrastructure
             Initialize();
         }
 
-        protected IList<ISong> _playlist;
-        public virtual IList<ISong> PlayList
+        protected IList<Song> _playlist;
+        public virtual IList<Song> PlayList
         {
             get { return _playlist; }
             set { _playlist = value; }
         }
 
-        protected ISong _currentSong;
-        public virtual ISong CurrentSong
+        protected Song _currentSong;
+        public virtual Song CurrentSong
         {
             get { return _currentSong; }
             set { _currentSong = value; }
         }
 
-        protected ISong _nextSong;
-        public virtual ISong NextSong
+        protected Song _nextSong;
+        public virtual Song NextSong
         {
             get { return _nextSong; }
             set { _nextSong = value; }
@@ -131,7 +131,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public event EventHandler<PlayerEvent> PlayerEvent;
 
-        public virtual void AddSongsToPlayList(ICollection<ISong> songs)
+        public virtual void AddSongsToPlayList(ICollection<Song> songs)
         {
             foreach (var song in songs)
             {
@@ -169,7 +169,7 @@ namespace BCode.MusicPlayer.Infrastructure
             PublishEvent(songResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
-        public virtual void AddSongToPlayList(ISong song)
+        public virtual void AddSongToPlayList(Song song)
         {
             _playlistSongCount++;
             song.Order = _playlistSongCount;
@@ -235,7 +235,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 NextSong = null;
             }
 
-            ISong songToPlay = CurrentSong ?? PlayList?.FirstOrDefault();
+            Song songToPlay = CurrentSong ?? PlayList?.FirstOrDefault();
 
             if (songToPlay is null)
                 return;
@@ -249,7 +249,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Play(int playListIndex)
         {
-            ISong songToPlay = PlayList?[playListIndex];
+            Song songToPlay = PlayList?[playListIndex];
 
             if (songToPlay is null)
                 return;
@@ -277,7 +277,7 @@ namespace BCode.MusicPlayer.Infrastructure
             Play(prevIndex);
         }
 
-        public virtual void RemoveSongFromPlayList(ISong song)
+        public virtual void RemoveSongFromPlayList(Song song)
         {
             PlayList.Remove(song);
             PublishEvent($"Removed song [{song.Name}] from playlist", Core.PlayerEvent.Category.PlayListUpdate);

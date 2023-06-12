@@ -10,12 +10,14 @@ namespace BCode.MusicPlayer.Core
     {
         public SongRequestResult()
         {
-            Songs = new List<ISong>();
+            Songs = new List<Song>();
             ErrorMessages = new List<string>();
+            WarningMessages = new List<string>();
         }
 
-        public List<ISong> Songs { get; }
-        public List<string> ErrorMessages { get; }        
+        public List<Song> Songs { get; }
+        public List<string> ErrorMessages { get; }     
+        public List<string> WarningMessages { get; }
         public bool IsSuccessful => ErrorMessages.Count == 0;
         public string Result => IsSuccessful ? $"Found {Songs.Count} song(s)" : $"{string.Join(", ", ErrorMessages)}";
     }
