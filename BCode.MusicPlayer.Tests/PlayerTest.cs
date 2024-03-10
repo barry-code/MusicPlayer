@@ -144,22 +144,26 @@ namespace BCode.MusicPlayer.WpfPlayerTests
             //Arrange
             _fixture.Player.ClearPlayList();
             AddSampleSongsToPlayList();
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
             _fixture.Player.Play();
+            Thread.Sleep(500);
             _fixture.Player.SkipAhead();
+            Thread.Sleep(500);
             _fixture.Player.Pause();
-            Thread.Sleep(2000);
+            Thread.Sleep(500);
             var pausedSongTime = _fixture.Player.CurrentSongElapsedTime.TotalMilliseconds;
+            Thread.Sleep(500);
 
             //Act
             _fixture.Player.Play();
-            Thread.Sleep(2000);
+            var newTime = _fixture.Player.CurrentSongElapsedTime.TotalMilliseconds;
+            Thread.Sleep(500);
 
             //Assert
             Assert.True(_fixture.Player.CurrentSong is not null);
             Assert.True(_fixture.Player.IsPlaying);
             Assert.True(_fixture.Player.Status == Status.Playing);
-            Assert.True(_fixture.Player.CurrentSongElapsedTime.TotalMilliseconds >= pausedSongTime);
+            Assert.True(newTime >= pausedSongTime);
         }
 
         [Fact]
