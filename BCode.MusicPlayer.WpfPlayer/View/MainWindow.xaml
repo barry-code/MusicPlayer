@@ -104,11 +104,11 @@
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
                         <Label Content="Track:" Foreground="{StaticResource SecondaryHueMidBrush}" />
-                        <Label Content="{Binding Player.CurrentSong.Name}" MinWidth="80" />
+                        <Label Content="{Binding Player.CurrentSong.Name}" MinWidth="40" />
                         <Label Content="Artist:" Foreground="{StaticResource SecondaryHueMidBrush}" Margin="10,0,0,0" />
-                        <Label Content="{Binding Player.CurrentSong.ArtistName}" MinWidth="80" />
+                        <Label Content="{Binding Player.CurrentSong.ArtistName}" MinWidth="40" />
                         <Label Content="Album:" Foreground="{StaticResource SecondaryHueMidBrush}" Margin="10,0,0,0" />
-                        <Label Content="{Binding Player.CurrentSong.AlbumName}" MinWidth="80" />
+                        <Label Content="{Binding Player.CurrentSong.AlbumName}" MinWidth="40" />
                     </StackPanel>
 
                     <Grid Grid.Row="1" VerticalAlignment="Bottom">
@@ -118,7 +118,7 @@
                             <ColumnDefinition Width="75"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Player.CurrentSongElapsedTime, StringFormat=hh\\:mm\\:ss}" HorizontalAlignment="Center" Margin="10,0" />
-                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Style="{StaticResource MaterialDesignDiscreteHorizontalSlider}" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20" />
+                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20"  />
                         <TextBlock Grid.Column="2" HorizontalAlignment="Center" Margin="10,0" Text="{Binding Player.CurrentSong.Duration, StringFormat=hh\\:mm\\:ss}"/>
                     </Grid>
 
