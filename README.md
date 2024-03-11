@@ -4,6 +4,8 @@ Windows WPF Audio file player
 
 .Net 6 Wpf App
 
+![image](https://github.com/barry-code/BCode.MusicPlayer/assets/60239072/59c89444-f9fc-49ea-bb46-4dd0324c7099)
+
 Third Party Libraries:
 
 LibVlcSharp
@@ -14,5 +16,3 @@ https://github.com/mono/taglib-sharp
 
 MaterialDesignInXaml
 https://github.com/MaterialDesignInXAML/MaterialDesignInXamlToolkit
-
-![fixed image](https://user-images.githubusercontent.com/60239072/166298918-f429fb7e-6376-46d8-8440-51a326c3aece.png)
