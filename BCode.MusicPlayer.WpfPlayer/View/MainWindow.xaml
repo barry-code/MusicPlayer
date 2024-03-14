@@ -60,6 +60,7 @@
                     </Grid.ColumnDefinitions>
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Image Source="/Resources/headphone_music_icon_640x532.png" Height="30" Width="30" Margin="0,0,25,0" ToolTip="{Binding AppName}" />
                         <Button Name="btnSettings" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnSettings_Click" ToolTip="Settings">
                             <materialDesign:PackIcon Kind="Cog" Height="25" Width="25"/>
                         </Button>

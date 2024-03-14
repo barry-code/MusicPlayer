@@ -47,7 +47,8 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             }
             else
             {
-                this.WindowState = WindowState.Maximized;
+                _viewModel.ExpandedMode();
+                this.WindowState = WindowState.Maximized;                
             }
         }
 
@@ -71,6 +72,11 @@ namespace BCode.MusicPlayer.WpfPlayer.View
 
         private void btnMinimalPlayer_Click(object sender, RoutedEventArgs e)
         {
+            if (this.WindowState == WindowState.Maximized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+
             _viewModel.MinimalMode();
         }
 

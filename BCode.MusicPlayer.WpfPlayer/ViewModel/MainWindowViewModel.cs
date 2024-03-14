@@ -11,6 +11,7 @@ using System.Reactive.Linq;
 using System.Windows.Forms;
 using Timer = System.Threading.Timer;
 using System.Windows;
+using System.Reflection;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -21,6 +22,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private const int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
         private SnackbarMessageQueue _notificationMessageQueue;
         private Timer _notificationsFinishedTimer;
+        private string _appName = string.Empty;
         private const int DefaultHeight = 700;
         private const int DefaultWidth = 900;
         private const int MinimizedModeMinHeight = 295;
@@ -32,6 +34,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             Player = player;
             _logger = logger;
+            _appName = $"{Assembly.GetExecutingAssembly().GetName().Name} {Assembly.GetExecutingAssembly().GetName().Version}";
+
             SetupNotifications();
 
             Player.PlayerEvent += HandlePlayerEvent;
@@ -142,6 +146,9 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             get => _windowWidth;
             set => this.RaiseAndSetIfChanged(ref _windowWidth, value);
         }
+
+        public string AppName => _appName;
+        
 
         public double CurrentSongMaxTime => Player?.CurrentSong?.Duration.TotalSeconds ?? 0;
 
