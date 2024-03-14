@@ -1,19 +1,8 @@
 ﻿using BCode.MusicPlayer.Core;
 using BCode.MusicPlayer.WpfPlayer.ViewModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Extensions.Logging;
 using BCode.MusicPlayer.WpfPlayer.Shared;
 
@@ -75,6 +64,21 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             }
         }
 
+        private void btnSettings_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnMinimalPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.MinimalMode();
+        }
+
+        private void btnExpandedPlayer_Click(object sender, RoutedEventArgs e)
+        {
+            _viewModel.ExpandedMode();
+        }
+
         private void snackBarMessages_IsActiveChanged(object sender, RoutedPropertyChangedEventArgs<bool> e)
         {
             try
@@ -92,7 +96,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
                 _logger.LogError(ex, "Error working with notifications");
             }
             
-        }        
+        }
     }
 }
    

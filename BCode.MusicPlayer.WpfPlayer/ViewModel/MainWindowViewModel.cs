@@ -10,6 +10,7 @@ using MaterialDesignThemes.Wpf;
 using System.Reactive.Linq;
 using System.Windows.Forms;
 using Timer = System.Threading.Timer;
+using System.Windows;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -20,6 +21,12 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private const int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
         private SnackbarMessageQueue _notificationMessageQueue;
         private Timer _notificationsFinishedTimer;
+        private const int DefaultHeight = 700;
+        private const int DefaultWidth = 900;
+        private const int MinimizedModeMinHeight = 295;
+        private const int ExpandedModeMinHeight = 540;
+        private const int MinimizedModeMinWidth = 600;
+        private const int ExpandedModeMinWidth = 600;
 
         public MainWindowViewModel(IPlayer player, ILogger logger)
         {
@@ -90,6 +97,52 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             set => this.RaiseAndSetIfChanged(ref _showNotificationAlert, value);
         }
 
+        private bool _isInMinimalMode;
+        public bool IsInMinimalMode
+        {
+            get => _isInMinimalMode;
+            set
+            {
+                this.RaiseAndSetIfChanged(ref _isInMinimalMode, value);
+                ExpandedVisibility = _isInMinimalMode ? Visibility.Collapsed : Visibility.Visible;
+            }
+        }
+
+        private Visibility _expandedVisibility = Visibility.Visible;
+        public Visibility ExpandedVisibility
+        {
+            get => _expandedVisibility;
+            set => this.RaiseAndSetIfChanged(ref _expandedVisibility, value);
+        }
+
+        private int _minHeight = ExpandedModeMinHeight;
+        public int MinHeight
+        {
+            get => _minHeight;
+            set => this.RaiseAndSetIfChanged(ref _minHeight, value);
+        }
+
+        private int _windowHeight = DefaultHeight;
+        public int WindowHeight
+        {
+            get => _windowHeight;
+            set => this.RaiseAndSetIfChanged(ref _windowHeight, value);
+        }
+
+        private int _minWidth = ExpandedModeMinWidth;
+        public int MinWidth
+        {
+            get => _minWidth;
+            set => this.RaiseAndSetIfChanged(ref _minWidth, value);
+        }
+
+        private int _windowWidth = DefaultWidth;
+        public int WindowWidth
+        {
+            get => _windowWidth;
+            set => this.RaiseAndSetIfChanged(ref _windowWidth, value);
+        }
+
         public double CurrentSongMaxTime => Player?.CurrentSong?.Duration.TotalSeconds ?? 0;
 
         public SnackbarMessageQueue NotificationMessageQueue => _notificationMessageQueue;
@@ -115,6 +168,22 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             catch (Exception)
             {
             }
+        }
+
+        public void MinimalMode()
+        {
+            IsInMinimalMode = true;
+            WindowHeight = MinHeight = MinimizedModeMinHeight;
+            WindowWidth = MinWidth = MinimizedModeMinWidth;
+        }
+
+        public void ExpandedMode()
+        {
+            IsInMinimalMode = false;            
+            MinHeight = ExpandedModeMinHeight;
+            WindowHeight = DefaultHeight;
+            MinWidth = ExpandedModeMinWidth;
+            WindowWidth = DefaultWidth;
         }
 
         private void PlayPause()
@@ -409,3 +478,4 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         }
     }    
 }
+

@@ -1,10 +1,10 @@
 ﻿@page "/"
-@using BCode.MusicPlayer.Infrastructure
+@using BCode.MusicPlayer.Core
 @using BCode.MusicPlayer.WebPlayer.Data
 
 <PageTitle>My Music Player</PageTitle>
 
-@inject WebPlayer Player
+@inject IPlayer Player
 @inject PlayerData PlayerData
 
 <p>Message: @PlayerData.LastMessage</p>

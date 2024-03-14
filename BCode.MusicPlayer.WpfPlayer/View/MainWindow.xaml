@@ -16,8 +16,10 @@
     TextElement.FontSize="14"
     FontFamily="{materialDesign:MaterialDesignFont}"
     Background="Transparent"    
-    Height="700" 
-    Width="900"
+    Height="{Binding WindowHeight, Mode=TwoWay}" 
+    Width="{Binding WindowWidth, Mode=TwoWay}"
+    MinWidth="{Binding MinWidth}" 
+    MinHeight="{Binding MinHeight}" 
     MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
@@ -51,19 +53,38 @@
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Button Name="btnMinimize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimize_Click">
-                        <materialDesign:PackIcon Kind="WindowMinimize" Height="25" Width="25"/>
-                    </Button>
-                    <Button Name="btnMaximize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMaximize_Click">
-                        <materialDesign:PackIcon Kind="WindowMaximize" Height="25" Width="25"/>
-                    </Button>
-                    <Button Name="btnClose" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnClose_Click">
-                        <materialDesign:PackIcon Kind="WindowClose" Height="25" Width="25"/>
-                    </Button>
-                </StackPanel>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
 
-                <Grid Grid.Row="1" Margin="5">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                        <Button Name="btnSettings" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnSettings_Click" ToolTip="Settings">
+                            <materialDesign:PackIcon Kind="Cog" Height="25" Width="25"/>
+                        </Button>
+                        <Button Name="btnMinimalPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimalPlayer_Click" ToolTip="Minimal Player Mode">
+                            <materialDesign:PackIcon Kind="ArrowExpandUp" Height="25" Width="25"/>
+                        </Button>
+                        <Button Name="btnExpandedPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnExpandedPlayer_Click" ToolTip="Expanded Player Mode">
+                            <materialDesign:PackIcon Kind="ArrowExpandDown" Height="25" Width="25"/>
+                        </Button>                        
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                        <Button Name="btnMinimize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimize_Click" ToolTip="Minimize Window">
+                            <materialDesign:PackIcon Kind="WindowMinimize" Height="25" Width="25"/>
+                        </Button>
+                        <Button Name="btnMaximize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMaximize_Click" ToolTip="Maximize Window">
+                            <materialDesign:PackIcon Kind="WindowMaximize" Height="25" Width="25"/>
+                        </Button>
+                        <Button Name="btnClose" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnClose_Click" ToolTip="Exit">
+                            <materialDesign:PackIcon Kind="WindowClose" Height="25" Width="25"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+                
+                <Grid Grid.Row="1" Margin="5,5,5,5">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="1.5*" MinWidth="60" />
                         <ColumnDefinition Width="*" MinWidth="40" />
@@ -118,13 +139,13 @@
                             <ColumnDefinition Width="75"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Player.CurrentSongElapsedTime, StringFormat=hh\\:mm\\:ss}" HorizontalAlignment="Center" Margin="10,0" />
-                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20"  />
+                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20" />
                         <TextBlock Grid.Column="2" HorizontalAlignment="Center" Margin="10,0" Text="{Binding Player.CurrentSong.Duration, StringFormat=hh\\:mm\\:ss}"/>
                     </Grid>
 
                 </Grid>
 
-                <Grid Grid.Row="3" Margin="0,5">
+                <Grid Grid.Row="3" Margin="0,5" Visibility="{Binding ExpandedVisibility}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
@@ -146,7 +167,7 @@
                             <Button Command="{Binding ClearPlayListCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Clear Playlist">
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="ClearCircle" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25"/>
-                                    <TextBlock Text="Clear"/>
+                                    <TextBlock Text="Clear" />
                                 </StackPanel>
                             </Button>
                         </StackPanel>
