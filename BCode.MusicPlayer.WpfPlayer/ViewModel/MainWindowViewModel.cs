@@ -440,6 +440,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {            
             try
             {
+                if (songTimeInSeconds >= (int)CurrentSongMaxTime)
+                {
+                    return;
+                }
+
                 Player.SkipTo(songTimeInSeconds);
             }
             catch (Exception ex)
