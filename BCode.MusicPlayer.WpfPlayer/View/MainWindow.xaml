@@ -10,7 +10,7 @@
     mc:Ignorable="d"         
     WindowStyle="None" 
     AllowsTransparency="True"   
-    ResizeMode="CanResizeWithGrip"
+    ResizeMode="{Binding ResizeMode}"
     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
     TextElement.FontWeight="Medium"
     TextElement.FontSize="14"
@@ -19,7 +19,7 @@
     Height="{Binding WindowHeight, Mode=TwoWay}" 
     Width="{Binding WindowWidth, Mode=TwoWay}"
     MinWidth="{Binding MinWidth}" 
-    MinHeight="{Binding MinHeight}" 
+    MinHeight="{Binding MinHeight}"     
     MouseLeftButtonDown="Window_MouseLeftButtonDown">
 
     <Window.Resources>
@@ -140,7 +140,7 @@
                             <ColumnDefinition Width="75"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding Player.CurrentSongElapsedTime, StringFormat=hh\\:mm\\:ss}" HorizontalAlignment="Center" Margin="10,0" />
-                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20" />
+                        <Slider Grid.Column="1" HorizontalAlignment="Stretch" Margin="10,0" Value="{Binding CurrentSongTimeSeconds, Mode=TwoWay}" Minimum="0" Maximum="{Binding CurrentSongMaxTime}" Height="20" IsManipulationEnabled="False" IsMoveToPointEnabled="True"/>
                         <TextBlock Grid.Column="2" HorizontalAlignment="Center" Margin="10,0" Text="{Binding Player.CurrentSong.Duration, StringFormat=hh\\:mm\\:ss}"/>
                     </Grid>
 
@@ -153,6 +153,18 @@
                     </Grid.ColumnDefinitions>
                     <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
                         <StackPanel Orientation="Vertical">
+                            <Button Command="{Binding BrowseCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Browse">
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="Nas" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25" />
+                                    <TextBlock Text="Browse"/>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{Binding PlaylistCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Browse">
+                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <materialDesign:PackIcon Kind="PlaylistMusic" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25" />
+                                    <TextBlock Text="Playlist"/>
+                                </StackPanel>
+                            </Button>
                             <Button Command="{Binding AddFilesCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Add File(s) to Playlist">
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
                                     <materialDesign:PackIcon Kind="Files" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25" />
@@ -174,7 +186,11 @@
                         </StackPanel>
                     </materialDesign:Card>
 
-                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        
+                    </materialDesign:Card>
+
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
                         <DataGrid x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />

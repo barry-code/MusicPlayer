@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Reflection;
+using System.Diagnostics;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -19,7 +20,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     {
         private ILogger _logger;
         private CancellationTokenSource _cancelTokenSource;
-        private const int NOTIFICATION_POP_UP_DURATION_MILLISECONDS = 2000;        
+        private const int PopUpDurationMilliseconds = 2000;        
         private SnackbarMessageQueue _notificationMessageQueue;
         private Timer _notificationsFinishedTimer;
         private string _appName = string.Empty;
@@ -55,6 +56,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             CancelLoadCmd = ReactiveCommand.Create(CancelLoad);
             MuteCmd = ReactiveCommand.Create(Mute);
             UnMuteCmd = ReactiveCommand.Create(UnMute);
+            BrowseCmd = ReactiveCommand.Create(BrowseMode);
+            PlaylistCmd = ReactiveCommand.Create(NonBrowseMode);
         }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
@@ -70,6 +73,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         public ReactiveCommand<Unit, Unit> CancelLoadCmd { get; }
         public ReactiveCommand<Unit, Unit> MuteCmd { get; }
         public ReactiveCommand<Unit, Unit> UnMuteCmd { get; }
+        public ReactiveCommand<Unit, Unit> BrowseCmd { get; }
+        public ReactiveCommand<Unit, Unit> PlaylistCmd { get; }
 
         public IPlayer Player { get; private set; }
 
@@ -147,8 +152,21 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             set => this.RaiseAndSetIfChanged(ref _windowWidth, value);
         }
 
-        public string AppName => _appName;
-        
+        private ResizeMode _resizeMode = ResizeMode.CanResizeWithGrip;
+        public ResizeMode ResizeMode
+        {
+            get => _resizeMode;
+            set => this.RaiseAndSetIfChanged(ref _resizeMode, value);
+        }
+
+        private bool _isBrowseScreen;
+        public bool IsBrowseScreen
+        {
+            get => _isBrowseScreen;
+            set => this.RaiseAndSetIfChanged(ref _isBrowseScreen, value);
+        }
+
+        public string AppName => _appName;        
 
         public double CurrentSongMaxTime => Player?.CurrentSong?.Duration.TotalSeconds ?? 0;
 
@@ -182,6 +200,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             IsInMinimalMode = true;
             WindowHeight = MinHeight = MinimizedModeMinHeight;
             WindowWidth = MinWidth = MinimizedModeMinWidth;
+            ResizeMode = ResizeMode.NoResize;
         }
 
         public void ExpandedMode()
@@ -191,6 +210,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             WindowHeight = DefaultHeight;
             MinWidth = ExpandedModeMinWidth;
             WindowWidth = DefaultWidth;
+            ResizeMode = ResizeMode.CanResizeWithGrip;
         }
 
         private void PlayPause()
@@ -455,7 +475,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
         private void SetupNotifications()
         {
-            _notificationMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(NOTIFICATION_POP_UP_DURATION_MILLISECONDS));
+            _notificationMessageQueue = new SnackbarMessageQueue(TimeSpan.FromMilliseconds(PopUpDurationMilliseconds));
             _notificationMessageQueue.DiscardDuplicates = true;
             _notificationsFinishedTimer = new Timer(NotificationsFinished, null, Timeout.Infinite, Timeout.Infinite);
         }
@@ -487,6 +507,16 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             filterString = "Audio Files|" + string.Join(";", Core.Constants.AudioFileExtensions.Select(f => $"*{f}"));
 
             return filterString;
+        }
+
+        private void BrowseMode()
+        {
+            IsBrowseScreen = true;
+        }
+
+        private void NonBrowseMode()
+        {
+            IsBrowseScreen = false;
         }
     }    
 }
