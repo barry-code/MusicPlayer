@@ -187,7 +187,39 @@
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Go to Root Folder" Click="btnFolderBrowseGoHome">
+                                    <materialDesign:PackIcon Kind="Home" Height="25" Width="25"/>
+                                </Button>
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel">
+                                    <materialDesign:PackIcon Kind="FolderArrowLeft" Height="25" Width="25"/>
+                                </Button>
+                                <Label VerticalAlignment="Center" Content="{Binding FileExplorer.CurrentPath}"></Label>
+                            </StackPanel>
+                            
+                            <DataGrid Grid.Row="1" x:Name="browseItemGrid" ItemsSource="{Binding FileExplorer.CurrentContent}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" SelectionUnit="FullRow" Margin="5" Background="Transparent" MouseDoubleClick="browseItemGrid_MouseDoubleClick" IsReadOnly="True">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="Name" />
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <materialDesign:PackIcon Kind="{Binding IconType}" Margin="2,0,5,0"/>
+                                                    <TextBlock Text="{Binding Name}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Grid>         
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">

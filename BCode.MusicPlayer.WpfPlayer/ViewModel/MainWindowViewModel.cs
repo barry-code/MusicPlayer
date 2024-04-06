@@ -13,6 +13,7 @@ using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Reflection;
 using System.Diagnostics;
+using BCode.MusicPlayer.WpfPlayer.Shared;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -42,6 +43,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             Player.PlayerEvent += HandlePlayerEvent;
 
             _logger.LogDebug("Starting Music Player");
+
+            FileExplorer = new FileExplorer();
 
             AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles);
             AddFolderCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist);
@@ -157,6 +160,13 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             get => _resizeMode;
             set => this.RaiseAndSetIfChanged(ref _resizeMode, value);
+        }
+
+        private FileExplorer _fileExplorer;
+        public FileExplorer FileExplorer 
+        { 
+            get => _fileExplorer;
+            set => this.RaiseAndSetIfChanged(ref _fileExplorer, value);
         }
 
         private bool _isBrowseScreen;

@@ -5,6 +5,9 @@ using System.Windows;
 using System.Windows.Input;
 using Microsoft.Extensions.Logging;
 using BCode.MusicPlayer.WpfPlayer.Shared;
+using static BCode.MusicPlayer.WpfPlayer.Shared.FileExplorer;
+using System.Windows.Controls;
+using System.Diagnostics.CodeAnalysis;
 
 namespace BCode.MusicPlayer.WpfPlayer.View
 {
@@ -102,6 +105,47 @@ namespace BCode.MusicPlayer.WpfPlayer.View
                 _logger.LogError(ex, "Error working with notifications");
             }
             
+        }
+
+        private void browseItemGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var grid = sender as DataGrid;
+
+            if (grid is null)
+                return;
+
+            var item = grid.SelectedItem as BrowseItem;
+
+            if (item is null)
+                return;
+
+            var dir = item.DirectoryDetail;
+
+            if (dir is not null)
+            {
+                _viewModel.FileExplorer.GoToDirectory(item.DirectoryDetail);
+                return;
+            }
+
+            var file = item.FileDetail;
+
+            if (file is not null)
+            {
+                var lastSongIndex = _viewModel.Player.PlayList.Count;
+
+                _viewModel.Player.AddSongToPlayList(file.FullName);
+                _viewModel.Player.Play(lastSongIndex);
+            }
+        }
+
+        private void btnFolderBrowseGoHome(object sender, RoutedEventArgs e)
+        {
+            _viewModel.FileExplorer.GoToTopDirectoryLevel();
+        }
+
+        private void btnFolderBrowseGoUpLevel(object sender, RoutedEventArgs e)
+        {
+            _viewModel.FileExplorer.GoBackUpDirectory();
         }
     }
 }
