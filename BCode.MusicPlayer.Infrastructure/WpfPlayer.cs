@@ -10,6 +10,7 @@ namespace BCode.MusicPlayer.Infrastructure
         public event PropertyChangedEventHandler PropertyChanged;
 
         public override IList<Song> PlayList { get; set; } = new ObservableCollection<Song>();
+        public override IList<Song> BrowseModePlayList { get; set; } = new ObservableCollection<Song>();
 
         public override Song CurrentSong
         {

@@ -8,7 +8,7 @@ namespace BCode.MusicPlayer.Core
 {
     public interface ILibraryManager : IDisposable
     {
-        Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken);
+        Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken, SearchOption searchOption = SearchOption.AllDirectories);
         Task<SongRequestResult> GetAllSongs(ICollection<string> files, CancellationToken cancelToken);
         Song GetSongFromFile(string filePath);
         Task UpdateSong(Song song);

@@ -13,7 +13,7 @@ namespace BCode.MusicPlayer.Infrastructure
             _mainCancelTokenSource = new CancellationTokenSource();
         }
 
-        public async Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken)
+        public async Task<SongRequestResult> GetAllSongs(string folderPath, CancellationToken cancelToken, SearchOption searchOption = SearchOption.AllDirectories)
         {
             if (_getSongsTask?.Status == TaskStatus.Running)
             {
@@ -43,7 +43,7 @@ namespace BCode.MusicPlayer.Infrastructure
                         cancelToken.ThrowIfCancellationRequested();
                     }
 
-                    var files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories)
+                    var files = Directory.GetFiles(folderPath, "*.*", searchOption)
                             .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f), StringComparer.CurrentCultureIgnoreCase))
                             .ToList();
 

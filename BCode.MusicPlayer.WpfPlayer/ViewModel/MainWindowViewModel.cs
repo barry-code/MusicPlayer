@@ -227,6 +227,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
+
                 if (Player.IsPlaying)
                 {
                     Player.Pause();
@@ -245,6 +247,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
                 Player.Previous();
             }
             catch (Exception ex)
@@ -257,6 +260,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
                 Player.Stop();
             }
             catch (Exception ex)
@@ -269,6 +273,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
                 Player.Next();
             }
             catch (Exception ex)
@@ -281,6 +286,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
                 Player.SkipAhead();
             }
             catch (Exception ex)
@@ -293,6 +299,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
                 Player.SkipBack();
             }
             catch (Exception ex)
@@ -379,6 +386,8 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
+                CheckBrowseMode();
+
                 Player.Play(playlistIndex);
             }
             catch (Exception ex)
@@ -527,6 +536,14 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private void NonBrowseMode()
         {
             IsBrowseScreen = false;
+        }
+
+        private void CheckBrowseMode()
+        {
+            if (!IsBrowseScreen && Player.IsBrowseMode)
+            {
+                Player.StopBrowseMode();
+            }
         }
     }    
 }

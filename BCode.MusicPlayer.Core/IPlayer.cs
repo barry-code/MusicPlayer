@@ -15,6 +15,8 @@ namespace BCode.MusicPlayer.Core
         public bool IsMuted { get; set; }
 
         event EventHandler<PlayerEvent> PlayerEvent;
+        public bool IsBrowseMode { get; set; }
+        IList<Song> BrowseModePlayList { get; set; }
 
         void Initialize();
         void Play();
@@ -36,5 +38,7 @@ namespace BCode.MusicPlayer.Core
         void SetVolume(float volume);
         void Mute();
         void UnMute();
+        Task StartBrowseMode(string fileFullPath, bool startPlaying = false);
+        void StopBrowseMode();
     }
 }

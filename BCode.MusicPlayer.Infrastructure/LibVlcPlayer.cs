@@ -1,5 +1,6 @@
 ﻿using BCode.MusicPlayer.Core;
 using LibVLCSharp.Shared;
+using System.Numerics;
 
 namespace BCode.MusicPlayer.Infrastructure
 {
@@ -15,6 +16,8 @@ namespace BCode.MusicPlayer.Infrastructure
         protected int _playlistSongCount;
         protected float _lastVolumeLevel = 0;
         private ILibraryManager _libraryManager;
+        protected int _browseModePlaylistSongCount = 0;
+        private string _browseModeCurrentPath = string.Empty;
 
         public LibVlcPlayer()
         {
@@ -129,6 +132,21 @@ namespace BCode.MusicPlayer.Infrastructure
             set { _isMuted = value; }
         }
 
+        protected bool _isBrowseMode;
+        public virtual bool IsBrowseMode
+        {
+            get { return _isBrowseMode; }
+            set { _isBrowseMode = value; }
+        }
+
+        protected IList<Song> _browseModePlaylist;
+        public virtual IList<Song> BrowseModePlayList
+        {
+            get { return _browseModePlaylist; }
+            set { _browseModePlaylist = value; }
+        }
+
+        public IList<Song> CurrentPlayList => IsBrowseMode ? BrowseModePlayList : PlayList;
         public event EventHandler<PlayerEvent> PlayerEvent;
 
         public virtual void AddSongsToPlayList(ICollection<Song> songs)
@@ -200,18 +218,18 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Next()
         {
-            if (PlayList.Count <= 0)
+            if (CurrentPlayList.Count <= 0)
                 return;
 
-            var currentIndex = PlayList.IndexOf(CurrentSong);
+            var currentIndex = CurrentPlayList.IndexOf(CurrentSong);
 
             var nextIndex = currentIndex + 1;
 
-            if (nextIndex > PlayList.Count - 1)
+            if (nextIndex > CurrentPlayList.Count - 1)
                 return;
 
             if (Status == Status.Paused)
-                NextSong = PlayList?[nextIndex];
+                NextSong = CurrentPlayList?[nextIndex];
 
             Play(nextIndex);
         }
@@ -235,7 +253,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 NextSong = null;
             }
 
-            Song songToPlay = CurrentSong ?? PlayList?.FirstOrDefault();
+            Song songToPlay = CurrentSong ?? CurrentPlayList?.FirstOrDefault();
 
             if (songToPlay is null)
                 return;
@@ -249,7 +267,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Play(int playListIndex)
         {
-            Song songToPlay = PlayList?[playListIndex];
+            Song songToPlay = CurrentPlayList?[playListIndex];
 
             if (songToPlay is null)
                 return;
@@ -261,10 +279,10 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Previous()
         {
-            if (PlayList.Count <= 0)
+            if (CurrentPlayList.Count <= 0)
                 return;
 
-            var currentIndex = PlayList.IndexOf(CurrentSong);
+            var currentIndex = CurrentPlayList.IndexOf(CurrentSong);
 
             var prevIndex = currentIndex - 1;
 
@@ -272,7 +290,7 @@ namespace BCode.MusicPlayer.Infrastructure
                 return;
 
             if (Status == Status.Paused)
-                NextSong = PlayList?[prevIndex];
+                NextSong = CurrentPlayList?[prevIndex];
 
             Play(prevIndex);
         }
@@ -353,6 +371,66 @@ namespace BCode.MusicPlayer.Infrastructure
                 return;
 
             CurrentVolume = _lastVolumeLevel;
+        }
+
+        public virtual async Task StartBrowseMode(string fileFullPath, bool startPlaying = false)
+        {
+            IsBrowseMode = true;
+
+            if (IsPlaying && startPlaying)
+            {
+                Stop();
+            }
+
+            var path = Path.GetDirectoryName(fileFullPath);
+
+            if (_browseModeCurrentPath != path)
+            {
+                if (IsPlaying)
+                {
+                    Stop();
+                }
+                
+                BrowseModePlayList.Clear();
+                _browseModePlaylistSongCount = 0;
+
+                _browseModeCurrentPath = path;
+
+                var songs = await _libraryManager.GetAllSongs(_browseModeCurrentPath, CancellationToken.None, SearchOption.TopDirectoryOnly);
+
+                if (!songs.IsSuccessful)
+                    return;
+
+                foreach (var song in songs.Songs)
+                {
+                    _browseModePlaylistSongCount++;
+                    song.Order = _browseModePlaylistSongCount;
+                    BrowseModePlayList.Add(song);
+                }
+            }
+
+            if (startPlaying)
+            {
+                var song = BrowseModePlayList.FirstOrDefault(s => s.Path == fileFullPath);
+
+                if (song is not null)
+                {
+                    Play(song.Order - 1);
+                }
+            }
+        }
+
+        public void StopBrowseMode()
+        {
+            IsBrowseMode = false;
+
+            if (IsPlaying)
+            {
+                Stop();
+            }
+
+            BrowseModePlayList.Clear();
+            _browseModeCurrentPath = string.Empty;
         }
 
         protected void AdjustPlayerVolume()

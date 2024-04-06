@@ -131,10 +131,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
 
             if (file is not null)
             {
-                var lastSongIndex = _viewModel.Player.PlayList.Count;
-
-                _viewModel.Player.AddSongToPlayList(file.FullName);
-                _viewModel.Player.Play(lastSongIndex);
+                _viewModel.Player.StartBrowseMode(file.FullName, true);
             }
         }
 
