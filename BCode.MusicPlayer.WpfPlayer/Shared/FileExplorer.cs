@@ -16,6 +16,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
     public class FileExplorer : ReactiveObject
     {
         private ILogger<FileExplorer> _logger;
+        private bool _isAtTopLevel;
 
         public FileExplorer()
         {
@@ -34,6 +35,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         {
             try
             {
+                if (_isAtTopLevel)
+                    return;
+
                 GetDrives();
             }
             catch (Exception ex)
@@ -47,6 +51,12 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             try
             {
                 var newDir = CurrentPath.Parent;
+
+                if (newDir is null)
+                {
+                    GoToTopDirectoryLevel();
+                    return;
+                }
 
                 UpdateWorkingDirectory(newDir);
             }
@@ -85,6 +95,8 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension)).Select(f => new BrowseItem(f)).ToArray();
                 CurrentContent.AddRange(files);
 
+                _isAtTopLevel = false;
+
                 this.RaisePropertyChanged(nameof(CurrentContent));
             }
             catch (Exception ex)
@@ -100,6 +112,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 var drives = DriveInfo.GetDrives();
                 CurrentContent.Clear();
                 CurrentContent.AddRange(drives.Select(d => new BrowseItem(d.RootDirectory)).ToArray());
+                _isAtTopLevel = true;
             }
             catch (Exception ex)
             {
