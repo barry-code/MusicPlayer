@@ -143,6 +143,12 @@ namespace BCode.MusicPlayer.WpfPlayer.View
         private void btnFolderBrowseGoUpLevel(object sender, RoutedEventArgs e)
         {
             _viewModel.FileExplorer.GoBackUpDirectory();
+
+            if (_viewModel.FileExplorer?.SelectedItem is null)
+                return;
+
+            browseItemGrid.UpdateLayout();
+            browseItemGrid.ScrollIntoView(_viewModel.FileExplorer.SelectedItem);
         }
     }
 }

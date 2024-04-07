@@ -193,16 +193,16 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Go to Root Folder" Click="btnFolderBrowseGoHome">
+                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Go to Root Folder" Click="btnFolderBrowseGoHome" Style="{StaticResource MaterialDesignRaisedLightButton}">
                                     <materialDesign:PackIcon Kind="Home" Height="25" Width="25"/>
                                 </Button>
-                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel">
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel" Style="{StaticResource MaterialDesignRaisedLightButton}">
                                     <materialDesign:PackIcon Kind="FolderArrowLeft" Height="25" Width="25"/>
                                 </Button>
                                 <Label VerticalAlignment="Center" Content="{Binding FileExplorer.CurrentPath}"></Label>
                             </StackPanel>
                             
-                            <DataGrid Grid.Row="1" x:Name="browseItemGrid" ItemsSource="{Binding FileExplorer.CurrentContent}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" SelectionUnit="FullRow" Margin="5" Background="Transparent" MouseDoubleClick="browseItemGrid_MouseDoubleClick" IsReadOnly="True">
+                            <DataGrid Grid.Row="1" x:Name="browseItemGrid" ItemsSource="{Binding FileExplorer.CurrentContent}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" SelectionUnit="FullRow" Margin="5" Background="Transparent" MouseDoubleClick="browseItemGrid_MouseDoubleClick" IsReadOnly="True" SelectedItem="{Binding FileExplorer.SelectedItem}">
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn>
                                         <DataGridTemplateColumn.Header>

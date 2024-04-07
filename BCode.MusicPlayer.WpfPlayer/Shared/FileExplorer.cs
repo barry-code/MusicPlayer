@@ -17,6 +17,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
     {
         private ILogger<FileExplorer> _logger;
         private bool _isAtTopLevel;
+        private DirectoryInfo _lastSelectedFolderPath;
 
         public FileExplorer()
         {
@@ -29,12 +30,17 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         public DirectoryInfo CurrentPath { get => _currentPath; set => this.RaiseAndSetIfChanged(ref _currentPath, value); }
 
         private ObservableCollection<BrowseItem> _currentContent = new ObservableCollection<BrowseItem>();
-        public ObservableCollection<BrowseItem> CurrentContent { get => _currentContent; set => this.RaiseAndSetIfChanged(ref _currentContent, value); } 
+        public ObservableCollection<BrowseItem> CurrentContent { get => _currentContent; set => this.RaiseAndSetIfChanged(ref _currentContent, value); }
+
+        private BrowseItem _selectedItem;
+        public BrowseItem SelectedItem { get => _selectedItem; set => this.RaiseAndSetIfChanged(ref _selectedItem, value); }
 
         public void GoToTopDirectoryLevel()
         {
             try
             {
+                _lastSelectedFolderPath = null;
+
                 if (_isAtTopLevel)
                     return;
 
@@ -50,6 +56,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         {
             try
             {
+                if (CurrentPath is null)
+                    return;
+
                 var newDir = CurrentPath.Parent;
 
                 if (newDir is null)
@@ -59,6 +68,20 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 }
 
                 UpdateWorkingDirectory(newDir);
+
+                if (_lastSelectedFolderPath is null)
+                {
+                    return;
+                }
+
+                var lastSelected = CurrentContent.FirstOrDefault(c => c.IsDirectory && c.DirectoryDetail.FullName == _lastSelectedFolderPath.FullName);
+
+                if (lastSelected is not null)
+                {
+                    SelectedItem = lastSelected;
+                }
+
+                _lastSelectedFolderPath = SelectedItem.DirectoryDetail.Parent;
             }
             catch (Exception ex)
             {
@@ -70,6 +93,8 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         {
             try
             {
+                _lastSelectedFolderPath = SelectedItem.DirectoryDetail;
+
                 UpdateWorkingDirectory(newDirectory);
             }
             catch (Exception ex)
@@ -92,7 +117,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).ToArray();
                 CurrentContent.AddRange(dirs);
 
-                var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension)).Select(f => new BrowseItem(f)).ToArray();
+                var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase)).Select(f => new BrowseItem(f)).ToArray();
                 CurrentContent.AddRange(files);
 
                 _isAtTopLevel = false;
