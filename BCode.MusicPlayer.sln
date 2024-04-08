@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.WpfPlayer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.Infrastructure", "BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj", "{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BCode.MusicPlayer.WebPlayer", "BCode.MusicPlayer.WebPlayer\BCode.MusicPlayer.WebPlayer.csproj", "{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,10 +37,6 @@ Global
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,7 +46,6 @@ Global
 		{F9B7BA64-5D27-4BA1-A1EE-59F3C563E2AA} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
 		{B635B235-0425-49BD-A3F8-8A5D4706C408} = {8692E81C-C0C8-491A-A932-C4462A962C53}
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
-		{65F8D3A1-2DB6-4E15-A183-10A6A4DA5EE2} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7DB7CD9-7FC3-46ED-9822-4363E81CCAC3}
