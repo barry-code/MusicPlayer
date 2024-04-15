@@ -213,7 +213,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Initialize()
         {
-            CurrentVolume = 50;
+            CurrentVolume = 30;
         }
 
         public virtual void Next()
@@ -431,6 +431,11 @@ namespace BCode.MusicPlayer.Infrastructure
 
             BrowseModePlayList.Clear();
             _browseModeCurrentPath = string.Empty;
+        }
+
+        public virtual void Exit()
+        {
+
         }
 
         protected void AdjustPlayerVolume()

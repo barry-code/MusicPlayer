@@ -26,6 +26,7 @@ namespace BCode.MusicPlayer.WpfPlayer
     {
         private static IContainer _container { get; set; }
         private ILogger _logger;
+        private IPlayer _player;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -43,6 +44,8 @@ namespace BCode.MusicPlayer.WpfPlayer
 
             _logger.LogInformation("App starting");
 
+            _player = _container.Resolve<IPlayer>();
+
             this.Exit += OnExit;
 
             MainWindow = (Window)_container.Resolve<IMainWindow>();
@@ -53,6 +56,9 @@ namespace BCode.MusicPlayer.WpfPlayer
         private void OnExit(object sender, ExitEventArgs e)
         {
             _logger.LogInformation("App exiting");
+
+            _player.Exit();
+
             _container.Dispose();
         }
     }

@@ -7,6 +7,8 @@ namespace BCode.MusicPlayer.Infrastructure
 {
     public class WpfPlayer : LibVlcPlayer, INotifyPropertyChanged
     {
+        SettingsManager _settingsManager;
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public override IList<Song> PlayList { get; set; } = new ObservableCollection<Song>();
@@ -99,6 +101,27 @@ namespace BCode.MusicPlayer.Infrastructure
                 _isMuted = value;
                 NotifyPropertyChanged();
             }
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            _settingsManager = new SettingsManager();
+            
+            var currentSettings = _settingsManager.GetSettings();
+
+            CurrentVolume = currentSettings.LastVolume;
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+
+            _settingsManager.UpdateSettings(new MusicPlayerSettings()
+            {
+                LastVolume = CurrentVolume
+            });
         }
 
         private void NotifyPropertyChanged([CallerMemberName] string name = "")

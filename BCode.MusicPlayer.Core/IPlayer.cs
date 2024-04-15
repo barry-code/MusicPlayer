@@ -40,5 +40,6 @@ namespace BCode.MusicPlayer.Core
         void UnMute();
         Task StartBrowseMode(string fileFullPath, bool startPlaying = false);
         void StopBrowseMode();
+        void Exit();
     }
 }
