@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace BCode.MusicPlayer.Infrastructure;
+namespace BCode.MusicPlayer.WpfPlayer.Shared;
 public class SettingsManager
 {
 

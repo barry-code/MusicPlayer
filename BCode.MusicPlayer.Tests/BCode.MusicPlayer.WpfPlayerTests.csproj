@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BCode.MusicPlayer.Core\BCode.MusicPlayer.Core.csproj" />
-    <ProjectReference Include="..\BCode.MusicPlayer.Infrastructure\BCode.MusicPlayer.Infrastructure.csproj" />
+    <ProjectReference Include="..\BCode.MusicPlayer.WpfPlayer\BCode.MusicPlayer.WpfPlayer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

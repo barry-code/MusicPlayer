@@ -1,5 +1,6 @@
 ﻿using BCode.MusicPlayer.Core;
 using BCode.MusicPlayer.Infrastructure;
+using BCode.MusicPlayer.WpfPlayer.Shared;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace BCode.MusicPlayer.WpfPlayerTests
     {
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IPlayer, Infrastructure.WpfPlayer>();
+            services.AddSingleton<IPlayer, MyWpfPlayer>();
         }
     }
 }
