@@ -459,6 +459,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
                 if (ev.EventCategory == PlayerEvent.Category.TrackUpdate)
                 {
+                    if (Player.IsBrowseMode)
+                    {
+                        UpdateBrowseModeSong();
+                    }
+
                     this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
                     _currentSongTimeSeconds = 0;
                     this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
@@ -466,6 +471,33 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 
                 _logger.LogInformation(ev.Message);
                 CurrentStatusMessage = ev.Message;
+            }
+        }
+
+        private void UpdateBrowseModeSong()
+        {
+            try
+            {
+                var currentSongPath = Player.CurrentSong.Path;
+
+                if (FileExplorer.SelectedItem is null)
+                    return;
+
+                var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.FileDetail.FullName;
+
+                if (currentSongPath == currentBrowseModeSelectedFile)
+                    return;
+
+                var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.FileDetail.FullName == currentSongPath);
+                
+                if (newSongInBrowserScreen is null)
+                    return;
+
+                FileExplorer.SelectedItem = newSongInBrowserScreen;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error updating browse mode song");
             }
         }
 
