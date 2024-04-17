@@ -28,9 +28,9 @@ namespace BCode.MusicPlayer.Core
         void SkipAhead();
         void SkipBack();
         void SkipTo(int seconds);
-        void AddSongToPlayList(Song song);
-        void AddSongToPlayList(string filePath);
-        void AddSongsToPlayList(ICollection<Song> songs);
+        Task AddSongToPlayList(Song song);
+        Task AddSongToPlayList(string filePath);
+        Task AddSongsToPlayList(ICollection<Song> songs);
         Task AddSongsToPlayList(ICollection<string> files, CancellationToken addSongsCancelToken);
         Task AddSongsToPlayList(string folderPath, CancellationToken addSongsCancelToken);
         void RemoveSongFromPlayList(Song song);

@@ -149,10 +149,11 @@ namespace BCode.MusicPlayer.Infrastructure
         public IList<Song> CurrentPlayList => IsBrowseMode ? BrowseModePlayList : PlayList;
         public event EventHandler<PlayerEvent> PlayerEvent;
 
-        public virtual void AddSongsToPlayList(ICollection<Song> songs)
+        public virtual async Task AddSongsToPlayList(ICollection<Song> songs)
         {
             foreach (var song in songs)
             {
+                await CheckSongDurationSet(song);
                 _playlistSongCount++;
                 song.Order = _playlistSongCount;
                 PlayList.Add(song);
@@ -167,7 +168,7 @@ namespace BCode.MusicPlayer.Infrastructure
 
             if (songsResult.IsSuccessful)
             {
-                AddSongsToPlayList(songsResult.Songs);
+                await AddSongsToPlayList(songsResult.Songs);
                 return;
             }
 
@@ -180,27 +181,28 @@ namespace BCode.MusicPlayer.Infrastructure
 
             if (songResult.IsSuccessful)
             {
-                AddSongsToPlayList(songResult.Songs);
+                await AddSongsToPlayList(songResult.Songs);
                 return;
             }
 
             PublishEvent(songResult.Result, Core.PlayerEvent.Category.PlayerState, Core.PlayerEvent.Type.Error, null);
         }
 
-        public virtual void AddSongToPlayList(Song song)
+        public virtual async Task AddSongToPlayList(Song song)
         {
+            await CheckSongDurationSet(song);
             _playlistSongCount++;
             song.Order = _playlistSongCount;
             PlayList.Add(song);
         }
 
-        public virtual void AddSongToPlayList(string filePath)
+        public virtual async Task AddSongToPlayList(string filePath)
         {
             var song = _libraryManager.GetSongFromFile(filePath);
 
             if (song is not null)
             {
-                AddSongToPlayList(song);
+                await AddSongToPlayList(song);
             }
         }
 
@@ -399,10 +401,11 @@ namespace BCode.MusicPlayer.Infrastructure
                 var songs = await _libraryManager.GetAllSongs(_browseModeCurrentPath, CancellationToken.None, SearchOption.TopDirectoryOnly);
 
                 if (!songs.IsSuccessful)
-                    return;
+                    return;                
 
                 foreach (var song in songs.Songs)
                 {
+                    await CheckSongDurationSet(song);
                     _browseModePlaylistSongCount++;
                     song.Order = _browseModePlaylistSongCount;
                     BrowseModePlayList.Add(song);
@@ -555,6 +558,24 @@ namespace BCode.MusicPlayer.Infrastructure
             }
 
             _playlistSongCount = 0;
+        }
+
+        private async Task CheckSongDurationSet(Song song)
+        {
+            try
+            {
+                if (song.Duration != TimeSpan.Zero)
+                    return;
+
+                using (Media songDetail = new Media(_libVlc, song.Path))
+                {
+                    await songDetail.Parse(MediaParseOptions.ParseNetwork);
+                    song.Duration = TimeSpan.FromMilliseconds(songDetail.Duration);
+                }
+            }
+            catch (Exception)
+            {
+            }
         }
 
         protected virtual void Dispose(bool disposing)
