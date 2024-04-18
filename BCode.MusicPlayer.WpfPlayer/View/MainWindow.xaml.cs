@@ -124,6 +124,12 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             if (dir is not null)
             {
                 _viewModel.FileExplorer.GoToDirectory(item.DirectoryDetail);
+
+                if (_viewModel.FileExplorer?.SelectedItem is not null)
+                {
+                    browseItemGrid.ScrollIntoView(_viewModel.FileExplorer.SelectedItem);
+                }
+
                 return;
             }
 
@@ -132,7 +138,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             if (file is not null)
             {
                 _viewModel.Player.StartBrowseMode(file.FullName, true);
-            }
+            }         
         }
 
         private void btnFolderBrowseGoHome(object sender, RoutedEventArgs e)

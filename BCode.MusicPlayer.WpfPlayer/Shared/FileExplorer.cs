@@ -120,6 +120,8 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase)).Select(f => new BrowseItem(f)).ToArray();
                 CurrentContent.AddRange(files);
 
+                SelectedItem = CurrentContent.FirstOrDefault();
+
                 _isAtTopLevel = false;
 
                 this.RaisePropertyChanged(nameof(CurrentContent));
