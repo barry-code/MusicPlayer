@@ -9,7 +9,7 @@ Developed using .Net 6 WPF.
 
 
 ## Why?
-Just to have a very simplistic audio player, with bigger buttons.
+Just to have a very simplistic audio player customized to my liking.
 
 
 ## Screenshots
