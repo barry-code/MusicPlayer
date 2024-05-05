@@ -21,7 +21,7 @@ Just to have a very simplistic audio player customized to my liking.
 
 ## Third Party Libraries
 ### LibVlcSharp
-https://code.videolan.org/videolan/LibVLCSharp
+https://github.com/videolan/libvlcsharp
 
 ### TagLib
 https://github.com/mono/taglib-sharp
