@@ -40,6 +40,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             try
             {
                 _lastSelectedFolderPath = null;
+                CurrentPath = null;
 
                 if (_isAtTopLevel)
                     return;
