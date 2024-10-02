@@ -148,7 +148,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             }
         }
 
-        public class BrowseItem
+        public class BrowseItem : ReactiveObject
         {
             public BrowseItem(DirectoryInfo di)
             {
@@ -162,7 +162,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             {
                 Name = fi.Name;
                 FileDetail = fi;
-                IconType = "File";
+                IconType = "File";                
             }
 
             public string Name { get; private set; }
@@ -170,6 +170,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             public FileInfo FileDetail { get; private set; }
             public bool IsDirectory { get; private set; }
             public string IconType { get; private set; }
+
+            private string _duration = string.Empty;
+            public string Duration { get => _duration; set => this.RaiseAndSetIfChanged(ref _duration, value); }
         }
     }
 }

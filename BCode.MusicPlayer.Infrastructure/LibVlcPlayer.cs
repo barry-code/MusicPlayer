@@ -410,6 +410,8 @@ namespace BCode.MusicPlayer.Infrastructure
                     song.Order = _browseModePlaylistSongCount;
                     BrowseModePlayList.Add(song);
                 }
+
+                PublishEvent("Songs added to browse mode", Core.PlayerEvent.Category.BrowseModePlayListUpdate, Core.PlayerEvent.Type.Information);
             }
 
             if (startPlaying)

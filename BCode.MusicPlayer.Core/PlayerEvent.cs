@@ -28,7 +28,8 @@ namespace BCode.MusicPlayer.Core
             PlayerState,
             TrackTimeUpdate,
             TrackUpdate,
-            PlayListUpdate
+            PlayListUpdate,
+            BrowseModePlayListUpdate
         }
 
         public enum Type

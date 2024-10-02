@@ -12,7 +12,6 @@ using System.Windows.Forms;
 using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Reflection;
-using System.Diagnostics;
 using BCode.MusicPlayer.WpfPlayer.Shared;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
@@ -424,54 +423,60 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             var ev = e as PlayerEvent;
 
-            if (ev is not null)
+            if (ev is null)
+                return;
+
+            if (ev.EventCategory == PlayerEvent.Category.TrackTimeUpdate)
             {
-                if (ev.EventCategory == PlayerEvent.Category.TrackTimeUpdate)
-                {
-                    var newTime = (int)(Player?.CurrentSongElapsedTime.TotalSeconds ?? 0);
-                    
-                    if (_currentSongTimeSeconds != newTime)
-                    {
-                        _currentSongTimeSeconds = newTime;
-                        this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
-                    }
-                                      
-                    return;
-                }
+                var newTime = (int)(Player?.CurrentSongElapsedTime.TotalSeconds ?? 0);
 
-                if (ev.Message == "Stopped")
+                if (_currentSongTimeSeconds != newTime)
                 {
-                    return;
-                }
-
-                if (ev.EventCategory == PlayerEvent.Category.PlayListUpdate)
-                {
-                    ShowNotificationPopUp(ev.Message);
-                    return;
-                }
-
-                if (ev.EventType == PlayerEvent.Type.Error)
-                {
-                    _logger.LogError(ev.Message);
-                    ShowNotificationPopUp(ev.Message);
-                    return;
-                }
-
-                if (ev.EventCategory == PlayerEvent.Category.TrackUpdate)
-                {
-                    if (Player.IsBrowseMode)
-                    {
-                        UpdateBrowseModeSong();
-                    }
-
-                    this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
-                    _currentSongTimeSeconds = 0;
+                    _currentSongTimeSeconds = newTime;
                     this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
                 }
-                
-                _logger.LogInformation(ev.Message);
-                CurrentStatusMessage = ev.Message;
+
+                return;
             }
+
+            if (ev.Message == "Stopped")
+            {
+                return;
+            }
+
+            if (ev.EventCategory == PlayerEvent.Category.PlayListUpdate)
+            {
+                ShowNotificationPopUp(ev.Message);
+                return;
+            }
+
+            if (ev.EventCategory == PlayerEvent.Category.BrowseModePlayListUpdate)
+            {
+                GetBrowseModeSongDetails();
+                return;
+            }
+
+            if (ev.EventType == PlayerEvent.Type.Error)
+            {
+                _logger.LogError(ev.Message);
+                ShowNotificationPopUp(ev.Message);
+                return;
+            }
+
+            if (ev.EventCategory == PlayerEvent.Category.TrackUpdate)
+            {
+                if (Player.IsBrowseMode)
+                {
+                    UpdateBrowseModeSong();
+                }
+
+                this.RaisePropertyChanged(nameof(CurrentSongMaxTime));
+                _currentSongTimeSeconds = 0;
+                this.RaisePropertyChanged(nameof(CurrentSongTimeSeconds));
+            }
+
+            _logger.LogInformation(ev.Message);
+            CurrentStatusMessage = ev.Message;
         }
 
         private void UpdateBrowseModeSong()
@@ -575,6 +580,20 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             if (!IsBrowseScreen && Player.IsBrowseMode)
             {
                 Player.StopBrowseMode();
+            }
+        }
+
+        private void GetBrowseModeSongDetails()
+        {
+            //TODO: Refactor so that dont have to do this. Already have song details. Need to incorporate that into fileexplorer or replace file explorer.
+            foreach (var item in FileExplorer.CurrentContent.Where(i => !i.IsDirectory))
+            {
+                var songDetail = Player.BrowseModePlayList.FirstOrDefault(s => s.Path == item.FileDetail.FullName);
+
+                if (songDetail is null)
+                    continue;
+
+                item.Duration = songDetail.Duration.ToString(@"mm\:ss");
             }
         }
     }    
