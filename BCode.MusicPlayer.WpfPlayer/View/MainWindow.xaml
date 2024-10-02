@@ -165,24 +165,6 @@
                                     <TextBlock Text="Playlist"/>
                                 </StackPanel>
                             </Button>
-                            <Button Command="{Binding AddFilesCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Add File(s) to Playlist">
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="Files" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25" />
-                                    <TextBlock Text="Add Files"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding AddFolderCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Add Folder to Playlist">
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="Folder" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25"/>
-                                    <TextBlock Text="Add Folder"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding ClearPlayListCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Clear Playlist">
-                                <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <materialDesign:PackIcon Kind="ClearCircle" HorizontalAlignment="Center" Margin="0,0,0,1" Height="25" Width="25"/>
-                                    <TextBlock Text="Clear" />
-                                </StackPanel>
-                            </Button>
                         </StackPanel>
                     </materialDesign:Card>
 
@@ -233,29 +215,49 @@
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
-                        <DataGrid x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />
-                                <DataGridTextColumn Header="Song" Binding="{Binding Name}" IsReadOnly="True" />
-                                <DataGridTextColumn Header="Artist" Binding="{Binding ArtistName}" IsReadOnly="True" />
-                                <DataGridTextColumn Header="Album" Binding="{Binding AlbumName}" IsReadOnly="True" />
-                                <DataGridTextColumn Header="Year" Binding="{Binding Year}" IsReadOnly="True" />
-                                <DataGridTemplateColumn IsReadOnly="True">
-                                    <DataGridTemplateColumn.Header>
-                                        <TextBlock Text="Duration"/>
-                                    </DataGridTemplateColumn.Header>
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Duration, StringFormat=mm\\:ss}"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Path" Binding="{Binding Path}" IsReadOnly="True" />
-                            </DataGrid.Columns>
-                            <DataGrid.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding PlaySongFromPlayListCmd}" CommandParameter="{Binding ElementName=playlistGrid, Path=SelectedIndex}"/>
-                            </DataGrid.InputBindings>
-                        </DataGrid>
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="35"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Add File(s) to Playlist" Command="{Binding AddFilesCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                    <materialDesign:PackIcon Kind="File" Height="25" Width="25"/>
+                                </Button>
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Add Folder to Playlist" Command="{Binding AddFolderCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                    <materialDesign:PackIcon Kind="Folder" Height="25" Width="25"/>
+                                </Button>
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Clear Playlist" Command="{Binding ClearPlayListCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                    <materialDesign:PackIcon Kind="ClearCircle" Height="25" Width="25"/>
+                                </Button>
+                            </StackPanel>
+
+                            <DataGrid Grid.Row="1" x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Song" Binding="{Binding Name}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Artist" Binding="{Binding ArtistName}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Album" Binding="{Binding AlbumName}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Year" Binding="{Binding Year}" IsReadOnly="True" />
+                                    <DataGridTemplateColumn IsReadOnly="True">
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="Duration"/>
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Duration, StringFormat=mm\\:ss}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Path" Binding="{Binding Path}" IsReadOnly="True" />
+                                </DataGrid.Columns>
+                                <DataGrid.InputBindings>
+                                    <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding PlaySongFromPlayListCmd}" CommandParameter="{Binding ElementName=playlistGrid, Path=SelectedIndex}"/>
+                                </DataGrid.InputBindings>
+                            </DataGrid>
+                        </Grid>
+                        
                     </materialDesign:Card>
                 </Grid>
 
