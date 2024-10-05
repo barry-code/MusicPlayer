@@ -60,7 +60,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             UnMuteCmd = ReactiveCommand.Create(UnMute);
             BrowseCmd = ReactiveCommand.Create(BrowseMode);
             PlaylistCmd = ReactiveCommand.Create(NonBrowseMode);
-        }
+        }        
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
         public ReactiveCommand<Unit, Unit> AddFolderCmd { get; }
@@ -596,6 +596,40 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 item.Duration = songDetail.Duration.ToString(@"mm\:ss");
                 item.Artist = songDetail.ArtistName;
             }
+        }
+
+        public async Task AddItemFromBrowseScreenToPlaylist(object item)
+        {
+            try
+            {
+                var itemToAdd = item as BrowseItem;
+
+                if (itemToAdd is null)
+                    return;
+
+                IsLoading = true;
+
+                _cancelTokenSource = new CancellationTokenSource();
+
+                if (itemToAdd.IsDirectory)
+                {
+                    await Player.AddSongsToPlayList(itemToAdd.DirectoryDetail.FullName, _cancelTokenSource.Token);
+
+                    return;
+                }
+
+                await Player.AddSongToPlayList(itemToAdd.FileDetail.FullName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "error adding item from browse to playlist");
+            }
+            finally
+            {
+                IsLoading = false;
+                _cancelTokenSource?.Dispose();
+            }
+            
         }
     }    
 }

@@ -156,6 +156,16 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             browseItemGrid.UpdateLayout();
             browseItemGrid.ScrollIntoView(_viewModel.FileExplorer.SelectedItem);
         }
+
+        private async void AddBrowseItemToPlaylist_Click(object sender, RoutedEventArgs e)
+        {
+            var dataGrid = browseItemGrid;
+
+            if (dataGrid.SelectedItem is BrowseItem browseItem)
+            {
+                await _viewModel.AddItemFromBrowseScreenToPlaylist(browseItem);
+            }
+        }
     }
 }
    
