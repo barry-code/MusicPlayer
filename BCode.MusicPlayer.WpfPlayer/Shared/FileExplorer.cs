@@ -173,6 +173,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
             private string _duration = string.Empty;
             public string Duration { get => _duration; set => this.RaiseAndSetIfChanged(ref _duration, value); }
+
+            private string _artist = string.Empty;
+            public string Artist { get => _artist; set => this.RaiseAndSetIfChanged(ref _artist, value); }
         }
     }
 }

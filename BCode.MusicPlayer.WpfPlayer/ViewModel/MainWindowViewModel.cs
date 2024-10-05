@@ -594,6 +594,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     continue;
 
                 item.Duration = songDetail.Duration.ToString(@"mm\:ss");
+                item.Artist = songDetail.ArtistName;
             }
         }
     }    

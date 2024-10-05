@@ -209,6 +209,16 @@
                                             </DataTemplate>
                                         </DataGridTemplateColumn.CellTemplate>
                                     </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn>
+                                        <DataGridTemplateColumn.Header>
+                                            <TextBlock Text="Artist" />
+                                        </DataGridTemplateColumn.Header>
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Artist}"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>         
