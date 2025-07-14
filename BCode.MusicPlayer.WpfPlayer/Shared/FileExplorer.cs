@@ -115,10 +115,10 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
                 CurrentContent.Clear();
 
-                var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).ToArray();
+                var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).OrderBy(d => d.Name).ToArray();
                 CurrentContent.AddRange(dirs);
 
-                var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase)).Select(f => new BrowseItem(f)).ToArray();
+                var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase)).Select(f => new BrowseItem(f)).OrderBy(f => f.Name).ToArray();
                 CurrentContent.AddRange(files);
 
                 SelectedItem = CurrentContent.FirstOrDefault();
