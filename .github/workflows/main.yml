@@ -57,7 +57,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Publish app
-        run: dotnet publish src/WpfApp/WpfApp.csproj --configuration Release --output ./publish
+        run: dotnet publish BCode.MusicPlayer.WpfPlayer/BCode.MusicPlayer.WpfPlayer.csproj --configuration Release --output ./publish
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
