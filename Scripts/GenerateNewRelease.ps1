@@ -37,7 +37,7 @@ Write-Host "Git root directory detected as: $gitRoot"
 # Helper function to run git commands from git root
 function GitRootCmd {
     param([string[]]$args)
-    git -C $gitRoot @args
+    & git -C $gitRoot @args
 }
 
 function Parse-Version($versionString) {
