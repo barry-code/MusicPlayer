@@ -57,7 +57,7 @@ if ($UseVersion) {
     $newTag = $UseVersion
 } else {
     # Fetch tags from remote
-    GitRootCmd fetch --tags
+    GitRootCmd @("fetch", "--tags")
 
     # Get all tags starting with 'v' and parse to versions
     $tags = GitRootCmd tag | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
