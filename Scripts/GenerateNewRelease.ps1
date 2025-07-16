@@ -21,14 +21,29 @@ param(
     [string]$UseVersion
 )
 
-# Get the full path of the directory where this script is located
+# Function to find the git root folder by walking up directories
+function Find-GitRoot {
+    param([string]$startPath)
+
+    $current = $startPath
+
+    while ($current -ne [IO.Path]::GetPathRoot($current)) {
+        if (Test-Path (Join-Path $current ".git")) {
+            return $current
+        }
+        $current = Split-Path $current -Parent
+    }
+    return $null
+}
+
+# Get the directory where this script is located
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
 
-# Find the git root directory by running 'git rev-parse --show-toplevel'
-$gitRoot = git -C $scriptDir rev-parse --show-toplevel 2>$null
+# Find git root folder
+$gitRoot = Find-GitRoot $scriptDir
 
 if (-not $gitRoot) {
-    Write-Error "Unable to find git root. Make sure this script is inside a git repo."
+    Write-Error "Git root not found. Please run the script somewhere inside the git repo."
     exit 1
 }
 
@@ -40,6 +55,7 @@ function GitRootCmd {
     & git -C $gitRoot @args
 }
 
+# Parse a version string like v1.2.3 into a System.Version object
 function Parse-Version($versionString) {
     if ($versionString.StartsWith("v")) {
         $versionString = $versionString.Substring(1)
@@ -56,11 +72,11 @@ if ($UseVersion) {
     Write-Host "Using explicit version: $UseVersion"
     $newTag = $UseVersion
 } else {
-    # Fetch tags from remote
-    GitRootCmd @("fetch", "--tags")
+    # Fetch all tags from remote (without --tags to avoid errors)
+    GitRootCmd @("fetch")
 
     # Get all tags starting with 'v' and parse to versions
-    $tags = GitRootCmd tag | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
+    $tags = GitRootCmd @("tag") | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
 
     if ($tags.Count -eq 0) {
         Write-Host "No existing version tags found. Starting at $StartVersion"
@@ -89,6 +105,7 @@ GitRootCmd @("tag", $newTag)
 # Push tag to origin
 GitRootCmd @("push", "origin", $newTag)
 
-Write-Host "Tag $newTag created and pushed successfully to GitHub."
+Write-Host "Tag $newTag created and pushed successfully to Github."
+
 
 
