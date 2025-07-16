@@ -84,11 +84,11 @@ if ($UseVersion) {
 Write-Host "New version to tag: $newTag"
 
 # Create new git tag
-GitRootCmd tag $newTag
+GitRootCmd @("tag", $newTag)
 
 # Push tag to origin
-GitRootCmd push origin $newTag
+GitRootCmd @("push", "origin", $newTag)
 
-Write-Host "Tag $newTag created and pushed successfully to Gihub."
+Write-Host "Tag $newTag created and pushed successfully to GitHub."
 
 
