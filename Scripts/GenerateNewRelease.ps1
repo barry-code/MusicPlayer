@@ -21,38 +21,10 @@ param(
     [string]$UseVersion
 )
 
-# Function to find the git root folder by walking up directories
-function Find-GitRoot {
-    param([string]$startPath)
-
-    $current = $startPath
-
-    while ($current -ne [IO.Path]::GetPathRoot($current)) {
-        if (Test-Path (Join-Path $current ".git")) {
-            return $current
-        }
-        $current = Split-Path $current -Parent
-    }
-    return $null
-}
-
-# Get the directory where this script is located
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
-
-# Find git root folder
-$gitRoot = Find-GitRoot $scriptDir
-
-if (-not $gitRoot) {
-    Write-Error "Git root not found. Please run the script somewhere inside the git repo."
-    exit 1
-}
-
-Write-Host "Git root directory detected as: $gitRoot"
-
-# Helper function to run git commands from git root
-function GitRootCmd {
+# Helper function to run git commands in current directory (assumed repo root)
+function GitCmd {
     param([string[]]$args)
-    & git -C $gitRoot @args
+    & git @args
 }
 
 # Parse a version string like v1.2.3 into a System.Version object
@@ -72,11 +44,11 @@ if ($UseVersion) {
     Write-Host "Using explicit version: $UseVersion"
     $newTag = $UseVersion
 } else {
-    # Fetch all tags from remote (without --tags to avoid errors)
-    GitRootCmd @("fetch")
+    # Fetch all tags from remote
+    GitCmd fetch
 
     # Get all tags starting with 'v' and parse to versions
-    $tags = GitRootCmd @("tag") | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
+    $tags = GitCmd tag | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
 
     if ($tags.Count -eq 0) {
         Write-Host "No existing version tags found. Starting at $StartVersion"
@@ -100,12 +72,13 @@ if ($UseVersion) {
 Write-Host "New version to tag: $newTag"
 
 # Create new git tag
-GitRootCmd @("tag", $newTag)
+GitCmd tag $newTag
 
 # Push tag to origin
-GitRootCmd @("push", "origin", $newTag)
+GitCmd push origin $newTag
 
 Write-Host "Tag $newTag created and pushed successfully to Github."
+
 
 
 
