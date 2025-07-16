@@ -21,12 +21,6 @@ param(
     [string]$UseVersion
 )
 
-function GitCmd {
-    param([string[]]$args)
-    Write-Host "Running: git $($args -join ' ')" -ForegroundColor Cyan
-    & git @args
-}
-
 function Parse-Version($versionString) {
     if ($versionString.StartsWith("v")) {
         $versionString = $versionString.Substring(1)
@@ -42,9 +36,10 @@ if ($UseVersion) {
     Write-Host "Using explicit version: $UseVersion"
     $newTag = $UseVersion
 } else {
-    GitCmd @("fetch")
+    Write-Host "Fetching tags from origin..."
+    git fetch --tags
 
-    $tags = GitCmd @("tag") | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
+    $tags = git tag | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
 
     if ($tags.Count -eq 0) {
         Write-Host "No existing version tags found. Starting at $StartVersion"
@@ -62,12 +57,14 @@ if ($UseVersion) {
     $newTag = "v$newVersion"
 }
 
-Write-Host "New version to tag: $newTag"
+Write-Host "Creating new git tag: $newTag"
+git tag $newTag
 
-GitCmd @("tag", $newTag)
-GitCmd @("push", "origin", $newTag)
+Write-Host "Pushing tag to origin"
+git push origin $newTag
 
-Write-Host "Tag $newTag created and pushed successfully to Github."
+Write-Host "Tag $newTag created and pushed successfully to GitHub."
+
 
 
 
