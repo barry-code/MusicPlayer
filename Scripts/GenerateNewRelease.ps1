@@ -21,13 +21,12 @@ param(
     [string]$UseVersion
 )
 
-# Helper function to run git commands in current directory (assumed repo root)
 function GitCmd {
     param([string[]]$args)
+    Write-Host "Running: git $($args -join ' ')" -ForegroundColor Cyan
     & git @args
 }
 
-# Parse a version string like v1.2.3 into a System.Version object
 function Parse-Version($versionString) {
     if ($versionString.StartsWith("v")) {
         $versionString = $versionString.Substring(1)
@@ -36,30 +35,24 @@ function Parse-Version($versionString) {
 }
 
 if ($UseVersion) {
-    # Validate explicit version format
     if ($UseVersion -notmatch '^v\d+\.\d+\.\d+$') {
-        Write-Error "UseVersion parameter must be in the format vMajor.Minor.Build, e.g. v2.0.0"
+        Write-Error "UseVersion parameter must be in format vMajor.Minor.Build, e.g. v2.0.0"
         exit 1
     }
     Write-Host "Using explicit version: $UseVersion"
     $newTag = $UseVersion
 } else {
-    # Fetch all tags from remote
-    GitCmd fetch
+    GitCmd @("fetch")
 
-    # Get all tags starting with 'v' and parse to versions
-    $tags = GitCmd tag | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
+    $tags = GitCmd @("tag") | Where-Object { $_ -match '^v\d+\.\d+\.\d+$' }
 
     if ($tags.Count -eq 0) {
         Write-Host "No existing version tags found. Starting at $StartVersion"
         $newVersion = Parse-Version $StartVersion
     } else {
-        # Convert tags to System.Version objects, sort descending
         $versions = $tags | ForEach-Object { Parse-Version $_ } | Sort-Object -Descending
         $latestVersion = $versions[0]
         Write-Host "Latest existing version: v$latestVersion"
-
-        # Increment patch version
         $newVersion = [System.Version]::new(
             $latestVersion.Major,
             $latestVersion.Minor,
@@ -71,13 +64,11 @@ if ($UseVersion) {
 
 Write-Host "New version to tag: $newTag"
 
-# Create new git tag
-GitCmd tag $newTag
-
-# Push tag to origin
-GitCmd push origin $newTag
+GitCmd @("tag", $newTag)
+GitCmd @("push", "origin", $newTag)
 
 Write-Host "Tag $newTag created and pushed successfully to Github."
+
 
 
 
