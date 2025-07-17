@@ -59,6 +59,12 @@ jobs:
       - name: Publish app
         run: dotnet publish BCode.MusicPlayer.WpfPlayer/BCode.MusicPlayer.WpfPlayer.csproj --configuration Release --output ./publish
 
+      - name: Set version from tag
+        run: echo "VERSION=${GITHUB_REF_NAME}" >> $env:GITHUB_ENV
+
+      - name: Zip published output
+        run: Compress-Archive -Path ./publish/* -DestinationPath ./publish/BCode.MusicPlayer-${{ env.VERSION }}.zip
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
@@ -70,6 +76,6 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.ref_name }}
-          files: ./publish/**/*
+          files: ./publish/BCode.MusicPlayer-${{ env.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
