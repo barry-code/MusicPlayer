@@ -43,8 +43,9 @@ namespace BCode.MusicPlayer.Infrastructure
                         cancelToken.ThrowIfCancellationRequested();
                     }
 
-                    var files = Directory.GetFiles(folderPath, "*.*", searchOption)
+                    var files = Directory.GetFiles(folderPath, "*.*", searchOption)                            
                             .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f), StringComparer.CurrentCultureIgnoreCase))
+                            .OrderBy(f => f)
                             .ToList();
 
                     if (files is null || files?.Count == 0)
