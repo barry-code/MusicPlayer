@@ -169,7 +169,7 @@
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <Grid>
+                        <Grid>                            
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="*"/>
@@ -183,7 +183,13 @@
                                 </Button>
                                 <Label VerticalAlignment="Center" Content="{Binding FileExplorer.CurrentPath}"></Label>
                             </StackPanel>
-                            
+
+                            <Image Grid.Row="1"
+                               Source="{Binding FileExplorer.BackgroundImage}" 
+                               Stretch="UniformToFill" 
+                               Opacity="0.3"
+                               IsHitTestVisible="False" />
+
                             <DataGrid Grid.Row="1" 
                                       x:Name="browseItemGrid" 
                                       ItemsSource="{Binding FileExplorer.CurrentContent}" 

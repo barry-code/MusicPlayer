@@ -9,7 +9,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace BCode.MusicPlayer.WpfPlayer.Shared
 {
@@ -18,6 +21,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private ILogger<FileExplorer> _logger;
         private bool _isAtTopLevel;
         private DirectoryInfo _lastSelectedFolderPath;
+        private readonly object _imgLock = new object();
 
         public FileExplorer()
         {
@@ -34,6 +38,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
         private BrowseItem _selectedItem;
         public BrowseItem SelectedItem { get => _selectedItem; set => this.RaiseAndSetIfChanged(ref _selectedItem, value); }
+
+        private ImageSource _backgroundImage;
+        public ImageSource BackgroundImage { get => _backgroundImage; set => this.RaiseAndSetIfChanged(ref _backgroundImage, value); }
 
         public void GoToTopDirectoryLevel()
         {
@@ -118,12 +125,20 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).OrderBy(d => d.Name).ToArray();
                 CurrentContent.AddRange(dirs);
 
-                var files = directory.GetFiles().Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase)).Select(f => new BrowseItem(f)).OrderBy(f => f.Name).ToArray();
-                CurrentContent.AddRange(files);
+                var allFiles = directory.GetFiles().ToArray();
+
+                var audioFiles = allFiles
+                    .Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase))
+                    .Select(f => new BrowseItem(f))
+                    .OrderBy(f => f.Name);
+
+                CurrentContent.AddRange(audioFiles);
 
                 SelectedItem = CurrentContent.FirstOrDefault();
 
                 _isAtTopLevel = false;
+
+                Task.Run(() => CheckForFolderImage(allFiles));
 
                 this.RaisePropertyChanged(nameof(CurrentContent));
             }
@@ -145,6 +160,37 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             catch (Exception ex)
             {
                 _logger.LogError(ex, "error getting drives");
+            }
+        }
+    
+        private void CheckForFolderImage(FileInfo[] files)
+        {
+            try
+            {
+                HashSet<string> imgExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                {
+                    ".jpg", ".png", "bmp"
+                };
+
+                var img = files.Where(f => imgExtensions.Contains(f.Extension)).OrderByDescending(f => f.Length).FirstOrDefault();
+
+                if (img is not null)
+                {
+                    BitmapImage bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(img.FullName, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+                    bitmap.Freeze();
+
+                    lock (_imgLock)
+                    {
+                        BackgroundImage = bitmap;
+                    }
+                }
+            }
+            catch
+            {
             }
         }
     }
