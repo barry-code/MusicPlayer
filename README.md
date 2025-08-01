@@ -13,7 +13,8 @@ Just to have a very simplistic audio player customized to my liking.
 
 
 ## Screenshots
-![image](https://github.com/user-attachments/assets/b1709862-ddb1-41df-80f3-09592fbbfd78)
+<img width="911" height="698" alt="Capture" src="https://github.com/user-attachments/assets/1f94ec73-a16a-49e8-9fbc-67f926f201bd" />
+
 
 ![image](https://github.com/user-attachments/assets/f7aef955-79db-42c1-b6f3-d47d56a01768)
 
