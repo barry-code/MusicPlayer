@@ -186,8 +186,8 @@
 
                             <Image Grid.Row="1"
                                Source="{Binding FileExplorer.BackgroundImage}" 
-                               Stretch="UniformToFill" 
-                               Opacity="0.3"
+                               Stretch="Uniform" 
+                               Opacity="0.2"
                                IsHitTestVisible="False" />
 
                             <DataGrid Grid.Row="1" 
