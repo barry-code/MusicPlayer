@@ -138,6 +138,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             if (file is not null)
             {
                 _viewModel.Player.StartBrowseMode(file.FullName, true);
+                _viewModel.FileExplorer.UseCurrentFolderImage();
             }         
         }
 

@@ -22,6 +22,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private bool _isAtTopLevel;
         private DirectoryInfo _lastSelectedFolderPath;
         private readonly object _imgLock = new object();
+        private BitmapImage _nextImage;
 
         public FileExplorer()
         {
@@ -94,6 +95,14 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             catch (Exception ex)
             {
                 _logger.LogError(ex, "error going up folder level");
+            }
+        }
+
+        public void UseCurrentFolderImage()
+        {
+            lock (_imgLock)
+            {
+                BackgroundImage = _nextImage;
             }
         }
 
@@ -172,20 +181,22 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                     ".jpg", ".png", "bmp"
                 };
 
-                var img = files.Where(f => imgExtensions.Contains(f.Extension)).OrderByDescending(f => f.Length).FirstOrDefault();
+                var allImages = files.Where(f => imgExtensions.Contains(f.Extension)).ToList();
+                var frontCoverImage = allImages.FirstOrDefault(i => i.Name.Contains("front"));
+                var chosenImage = frontCoverImage != null ? frontCoverImage : allImages.OrderByDescending(f => f.Length).FirstOrDefault();
 
-                if (img is not null)
+                if (chosenImage is not null)
                 {
                     BitmapImage bitmap = new BitmapImage();
                     bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(img.FullName, UriKind.Absolute);
+                    bitmap.UriSource = new Uri(chosenImage.FullName, UriKind.Absolute);
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.EndInit();
                     bitmap.Freeze();
 
                     lock (_imgLock)
                     {
-                        BackgroundImage = bitmap;
+                        _nextImage = bitmap;
                     }
                 }
             }
