@@ -485,7 +485,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             {
                 var currentSongPath = Player.CurrentSong.Path;
 
-                if (FileExplorer.SelectedItem is null)
+                if (FileExplorer.SelectedItem is null || FileExplorer.SelectedItem.FileDetail is null)
                     return;
 
                 var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.FileDetail.FullName;
