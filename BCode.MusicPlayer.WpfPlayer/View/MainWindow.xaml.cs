@@ -8,6 +8,7 @@ using BCode.MusicPlayer.WpfPlayer.Shared;
 using static BCode.MusicPlayer.WpfPlayer.Shared.FileExplorer;
 using System.Windows.Controls;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
 namespace BCode.MusicPlayer.WpfPlayer.View
 {
@@ -107,7 +108,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             
         }
 
-        private void browseItemGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private async void browseItemGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             var grid = sender as DataGrid;
 
@@ -123,7 +124,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
 
             if (dir is not null)
             {
-                _viewModel.FileExplorer.GoToDirectory(item.DirectoryDetail);
+                await _viewModel.FileExplorer.GoToDirectory(item.DirectoryDetail);
 
                 if (_viewModel.FileExplorer?.SelectedItem is not null)
                 {
@@ -133,11 +134,11 @@ namespace BCode.MusicPlayer.WpfPlayer.View
                 return;
             }
 
-            var file = item.FileDetail;
+            var file = item.Song;
 
             if (file is not null)
             {
-                _viewModel.Player.StartBrowseMode(file.FullName, true);
+                await _viewModel.Player.StartBrowseMode(file.Path, true);
                 _viewModel.FileExplorer.UseCurrentFolderImage();
             }         
         }
@@ -147,9 +148,9 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             _viewModel.FileExplorer.GoToTopDirectoryLevel();
         }
 
-        private void btnFolderBrowseGoUpLevel(object sender, RoutedEventArgs e)
+        private async void btnFolderBrowseGoUpLevel(object sender, RoutedEventArgs e)
         {
-            _viewModel.FileExplorer.GoBackUpDirectory();
+            await _viewModel.FileExplorer.GoBackUpDirectory();
 
             if (_viewModel.FileExplorer?.SelectedItem is null)
                 return;

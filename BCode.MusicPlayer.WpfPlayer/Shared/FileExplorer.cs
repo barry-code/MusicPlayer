@@ -1,7 +1,6 @@
 ﻿using BCode.MusicPlayer.Core;
-using BCode.MusicPlayer.WpfPlayer.View;
+using BCode.MusicPlayer.Infrastructure;
 using DynamicData;
-using log4net.Core;
 using Microsoft.Extensions.Logging;
 using ReactiveUI;
 using System;
@@ -9,8 +8,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Documents;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -23,10 +22,13 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private DirectoryInfo _lastSelectedFolderPath;
         private readonly object _imgLock = new object();
         private BitmapImage _nextImage;
+        private ILibraryManager _libraryManager;
 
         public FileExplorer()
         {
             _logger = ApplicationLoggerFactory.CreateLogger<FileExplorer>();
+
+            _libraryManager = new LibraryManager();
 
             GetDrives();
         }
@@ -61,7 +63,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             }
         }
 
-        public void GoBackUpDirectory()
+        public async Task GoBackUpDirectory()
         {
             try
             {
@@ -76,7 +78,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                     return;
                 }
 
-                UpdateWorkingDirectory(newDir);
+                await UpdateWorkingDirectory(newDir);
 
                 if (_lastSelectedFolderPath is null)
                 {
@@ -106,13 +108,13 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             }
         }
 
-        public void GoToDirectory(DirectoryInfo newDirectory)
+        public async Task GoToDirectory(DirectoryInfo newDirectory)
         {
             try
             {
                 _lastSelectedFolderPath = SelectedItem.DirectoryDetail;
 
-                UpdateWorkingDirectory(newDirectory);
+                await UpdateWorkingDirectory(newDirectory);
             }
             catch (Exception ex)
             {
@@ -120,7 +122,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             }
         }
 
-        private void UpdateWorkingDirectory(DirectoryInfo directory)
+        private async Task UpdateWorkingDirectory(DirectoryInfo directory)
         {
             if (directory is null)
                 return;
@@ -136,18 +138,15 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
                 var allFiles = directory.GetFiles().ToArray();
 
-                var audioFiles = allFiles
-                    .Where(f => Constants.AudioFileExtensions.Contains(f.Extension, StringComparer.CurrentCultureIgnoreCase))
-                    .Select(f => new BrowseItem(f))
-                    .OrderBy(f => f.Name);
+                var songResults = await _libraryManager.GetAllSongs(directory.FullName, CancellationToken.None, SearchOption.TopDirectoryOnly);
 
-                CurrentContent.AddRange(audioFiles);
+                CurrentContent.AddRange(songResults.Songs.Select(s => new BrowseItem(s)));
 
                 SelectedItem = CurrentContent.FirstOrDefault();
 
                 _isAtTopLevel = false;
 
-                Task.Run(() => CheckForFolderImage(allFiles));
+                _ = Task.Run(() => CheckForFolderImage(allFiles));
 
                 this.RaisePropertyChanged(nameof(CurrentContent));
             }

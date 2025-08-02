@@ -171,6 +171,7 @@ namespace BCode.MusicPlayer.Infrastructure
                     song.AlbumName = string.IsNullOrEmpty(file.Tag.Album) ? file.Tag.AlbumSort : file.Tag.Album;
                     song.Year = file.Tag.Year == 0 ? String.Empty : file.Tag.Year.ToString();
                     song.Duration = file.Properties.Duration;
+                    song.TrackNumer = file.Tag.Track;
                 }
 
                 return song;

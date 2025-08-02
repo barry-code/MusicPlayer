@@ -483,22 +483,25 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             try
             {
-                var currentSongPath = Player.CurrentSong.Path;
 
-                if (FileExplorer.SelectedItem is null || FileExplorer.SelectedItem.FileDetail is null)
-                    return;
+                //TODO is this method still needed, now that have SongDetail in the BrowseItem ???
 
-                var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.FileDetail.FullName;
+                //var currentSongPath = Player.CurrentSong.Path;
 
-                if (currentSongPath == currentBrowseModeSelectedFile)
-                    return;
+                //if (FileExplorer.SelectedItem is null || FileExplorer.SelectedItem.FileDetail is null)
+                //    return;
 
-                var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.FileDetail.FullName == currentSongPath);
+                //var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.FileDetail.FullName;
+
+                //if (currentSongPath == currentBrowseModeSelectedFile)
+                //    return;
+
+                //var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.FileDetail.FullName == currentSongPath);
                 
-                if (newSongInBrowserScreen is null)
-                    return;
+                //if (newSongInBrowserScreen is null)
+                //    return;
 
-                FileExplorer.SelectedItem = newSongInBrowserScreen;
+                //FileExplorer.SelectedItem = newSongInBrowserScreen;
             }
             catch (Exception ex)
             {
@@ -586,16 +589,18 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private void GetBrowseModeSongDetails()
         {
             //TODO: Refactor so that dont have to do this. Already have song details. Need to incorporate that into fileexplorer or replace file explorer.
-            foreach (var item in FileExplorer.CurrentContent.Where(i => !i.IsDirectory))
-            {
-                var songDetail = Player.BrowseModePlayList.FirstOrDefault(s => s.Path == item.FileDetail.FullName);
+            // DONT THINK THIS IS NEEDED ANYMORE
 
-                if (songDetail is null)
-                    continue;
+            //foreach (var item in FileExplorer.CurrentContent.Where(i => !i.IsDirectory))
+            //{
+            //    var songDetail = Player.BrowseModePlayList.FirstOrDefault(s => s.Path == item.FileDetail.FullName);
 
-                item.Duration = songDetail.Duration.ToString(@"mm\:ss");
-                item.Artist = songDetail.ArtistName;
-            }
+            //    if (songDetail is null)
+            //        continue;
+
+            //    item.Duration = songDetail.Duration.ToString(@"mm\:ss");
+            //    item.Artist = songDetail.ArtistName;
+            //}
         }
 
         public async Task AddItemFromBrowseScreenToPlaylist(object item)
@@ -618,7 +623,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                     return;
                 }
 
-                await Player.AddSongToPlayList(itemToAdd.FileDetail.FullName);
+                await Player.AddSongToPlayList(itemToAdd.Song);
             }
             catch (Exception ex)
             {

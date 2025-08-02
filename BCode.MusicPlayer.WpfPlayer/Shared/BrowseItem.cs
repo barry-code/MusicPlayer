@@ -1,4 +1,5 @@
-﻿using ReactiveUI;
+﻿using BCode.MusicPlayer.Core;
+using ReactiveUI;
 using System.IO;
 
 namespace BCode.MusicPlayer.WpfPlayer.Shared;
@@ -12,16 +13,16 @@ public class BrowseItem : ReactiveObject
         IconType = "FolderOutline";
     }
 
-    public BrowseItem(FileInfo fi)
+    public BrowseItem(Song song)
     {
-        Name = fi.Name;
-        FileDetail = fi;
+        Name = song.Name;
+        Song = song;
         IconType = "File";
     }
 
     public string Name { get; private set; }
     public DirectoryInfo DirectoryDetail { get; private set; }
-    public FileInfo FileDetail { get; private set; }
+    public Song Song { get; private set; }
     public bool IsDirectory { get; private set; }
     public string IconType { get; private set; }
 
