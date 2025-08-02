@@ -102,6 +102,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
         public void UseCurrentFolderImage()
         {
+            //TODO: move all functionality relating to background image, into central location so can be used by both browse and also playlist screen.
             lock (_imgLock)
             {
                 BackgroundImage = _nextImage;
