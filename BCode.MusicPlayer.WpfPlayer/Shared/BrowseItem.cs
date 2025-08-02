@@ -18,6 +18,8 @@ public class BrowseItem : ReactiveObject
         Name = song.Name;
         Song = song;
         IconType = "File";
+        Duration = song.Duration.ToString(@"mm\:ss");
+        Artist = song.ArtistName;
     }
 
     public string Name { get; private set; }

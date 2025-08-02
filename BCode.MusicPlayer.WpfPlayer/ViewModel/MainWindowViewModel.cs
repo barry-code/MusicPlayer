@@ -486,22 +486,22 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
                 //TODO is this method still needed, now that have SongDetail in the BrowseItem ???
 
-                //var currentSongPath = Player.CurrentSong.Path;
+                var currentSongPath = Player.CurrentSong.Path;
 
-                //if (FileExplorer.SelectedItem is null || FileExplorer.SelectedItem.FileDetail is null)
-                //    return;
+                if (FileExplorer.SelectedItem is null || FileExplorer.SelectedItem.Song is null)
+                    return;
 
-                //var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.FileDetail.FullName;
+                var currentBrowseModeSelectedFile = FileExplorer.SelectedItem.Song.Path;
 
-                //if (currentSongPath == currentBrowseModeSelectedFile)
-                //    return;
+                if (currentSongPath == currentBrowseModeSelectedFile)
+                    return;
 
-                //var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.FileDetail.FullName == currentSongPath);
-                
-                //if (newSongInBrowserScreen is null)
-                //    return;
+                var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.Song.Path == currentSongPath);
 
-                //FileExplorer.SelectedItem = newSongInBrowserScreen;
+                if (newSongInBrowserScreen is null)
+                    return;
+
+                FileExplorer.SelectedItem = newSongInBrowserScreen;
             }
             catch (Exception ex)
             {
