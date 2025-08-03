@@ -36,6 +36,8 @@ namespace BCode.MusicPlayer.Infrastructure
                     return result;
                 }
 
+                List<Song> foundSongs = new();
+
                 try
                 {
                     if (cancelToken.IsCancellationRequested)
@@ -45,7 +47,6 @@ namespace BCode.MusicPlayer.Infrastructure
 
                     var files = Directory.GetFiles(folderPath, "*.*", searchOption)                            
                             .Where(f => Constants.AudioFileExtensions.Contains(Path.GetExtension(f), StringComparer.CurrentCultureIgnoreCase))
-                            .OrderBy(f => f)
                             .ToList();
 
                     if (files is null || files?.Count == 0)
@@ -61,7 +62,7 @@ namespace BCode.MusicPlayer.Infrastructure
                             var s = GetSongFromFile(files[i]);
                             if (s is not null)
                             {
-                                result.Songs.Add(s);
+                                foundSongs.Add(s);
                             }
                         }
                         catch (Exception e)
@@ -74,13 +75,15 @@ namespace BCode.MusicPlayer.Infrastructure
                             cancelToken.ThrowIfCancellationRequested();
                         }
                     }
+
+                    result.Songs.AddRange(foundSongs.OrderBy(s => s.Path).ThenBy(s => s.TrackNumer).ToList());
                 }
                 catch (OperationCanceledException)
                 {
                     result.Songs.Clear();
                     result.ErrorMessages.Add("Cancelled getting songs");
                     return result;
-                }
+                }                
 
                 return result;
 

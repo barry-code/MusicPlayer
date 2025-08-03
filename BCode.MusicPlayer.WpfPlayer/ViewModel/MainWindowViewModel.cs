@@ -496,7 +496,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 if (currentSongPath == currentBrowseModeSelectedFile)
                     return;
 
-                var newSongInBrowserScreen = FileExplorer.CurrentContent.FirstOrDefault(f => f.Song.Path == currentSongPath);
+                var newSongInBrowserScreen = FileExplorer.CurrentContent.Where(f => !f.IsDirectory).FirstOrDefault(f => f.Song.Path == currentSongPath);
 
                 if (newSongInBrowserScreen is null)
                     return;

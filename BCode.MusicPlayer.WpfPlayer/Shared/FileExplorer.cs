@@ -133,15 +133,18 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                 CurrentPath = directory;
 
                 CurrentContent.Clear();
+                List<BrowseItem> browseItems = new();
 
-                var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).OrderBy(d => d.Name).ToArray();
-                CurrentContent.AddRange(dirs);
+                var dirs = directory.GetDirectories().Where(d => (d.Attributes & FileAttributes.Hidden) == 0).Select(d => new BrowseItem(d)).OrderBy(d => d.Name).ToList();
+                browseItems.AddRange(dirs);
 
                 var allFiles = directory.GetFiles().ToArray();
 
                 var songResults = await _libraryManager.GetAllSongs(directory.FullName, CancellationToken.None, SearchOption.TopDirectoryOnly);
 
-                CurrentContent.AddRange(songResults.Songs.Select(s => new BrowseItem(s)));
+                browseItems.AddRange(songResults.Songs.Select(s => new BrowseItem(s)));
+
+                CurrentContent.AddRange(browseItems);
 
                 SelectedItem = CurrentContent.FirstOrDefault();
 
