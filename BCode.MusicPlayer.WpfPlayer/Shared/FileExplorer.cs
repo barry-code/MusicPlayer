@@ -202,6 +202,13 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
                         _nextImage = bitmap;
                     }
                 }
+                else
+                {
+                    lock (_imgLock)
+                    {
+                        _nextImage = null;
+                    }
+                }
             }
             catch
             {
