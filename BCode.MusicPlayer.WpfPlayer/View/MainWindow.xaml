@@ -181,6 +181,9 @@
                                 <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel" Style="{StaticResource MaterialDesignRaisedLightButton}">
                                     <materialDesign:PackIcon Kind="FolderArrowLeft" Height="25" Width="25"/>
                                 </Button>
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go to Current Song Folder" Click="btnCurrentSongFolder" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                    <materialDesign:PackIcon Kind="LocationOn" Height="25" Width="25"/>
+                                </Button>
                                 <Label VerticalAlignment="Center" Content="{Binding FileExplorer.CurrentPath}"></Label>
                             </StackPanel>
 

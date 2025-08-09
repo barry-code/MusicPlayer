@@ -20,6 +20,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private ILogger<FileExplorer> _logger;
         private bool _isAtTopLevel;
         private DirectoryInfo _lastSelectedFolderPath;
+        private string _currentlyPlayingFolderPath;
         private readonly object _imgLock = new object();
         private BitmapImage _nextImage;
         private ILibraryManager _libraryManager;
@@ -100,8 +101,10 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             }
         }
 
-        public void UseCurrentFolderImage()
+        public void SetCurrentFolder()
         {
+            _currentlyPlayingFolderPath = _currentPath.FullName;
+
             //TODO: move all functionality relating to background image, into central location so can be used by both browse and also playlist screen.
             lock (_imgLock)
             {
@@ -121,6 +124,18 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             {
                 _logger.LogError(ex, "error going to folder level");
             }
+        }
+
+        public async Task GoToCurrentlyPlayingFolder()
+        {
+            if (string.IsNullOrWhiteSpace(_currentlyPlayingFolderPath))
+                return;
+
+            if (_currentlyPlayingFolderPath == CurrentPath?.FullName)
+                return;
+
+            var directory = new DirectoryInfo(_currentlyPlayingFolderPath);
+            await UpdateWorkingDirectory(directory);
         }
 
         private async Task UpdateWorkingDirectory(DirectoryInfo directory)

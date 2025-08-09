@@ -139,7 +139,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             if (file is not null)
             {
                 await _viewModel.Player.StartBrowseMode(file.Path, true);
-                _viewModel.FileExplorer.UseCurrentFolderImage();
+                _viewModel.FileExplorer.SetCurrentFolder();
             }         
         }
 
@@ -167,6 +167,11 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             {
                 await _viewModel.AddItemFromBrowseScreenToPlaylist(browseItem);
             }
+        }
+
+        private async void btnCurrentSongFolder(object sender, RoutedEventArgs e)
+        {
+            await _viewModel.FileExplorer.GoToCurrentlyPlayingFolder();
         }
     }
 }
