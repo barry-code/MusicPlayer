@@ -35,7 +35,11 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         {
             Player = player;
             _logger = logger;
-            _appName = $"{Assembly.GetExecutingAssembly().GetName().Name} {Assembly.GetExecutingAssembly().GetName().Version}";
+            var assembly = Assembly.GetExecutingAssembly();
+            var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
+                          ?? assembly.GetName().Version?.ToString();
+
+            _appName = $"{assembly.GetName().Name} {version}";
 
             SetupNotifications();
 
