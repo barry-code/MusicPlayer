@@ -56,15 +56,15 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Publish app
-        run: dotnet publish BCode.MusicPlayer.WpfPlayer/BCode.MusicPlayer.WpfPlayer.csproj --configuration Release --output ./publish
-
       - name: Extract version from tag
         id: extract_version
         shell: pwsh
         run: |
           $tagName = $env:GITHUB_REF.Split('/')[-1]
           echo "version=$tagName" >> $env:GITHUB_ENV
+          
+      - name: Publish app
+        run: dotnet publish BCode.MusicPlayer.WpfPlayer/BCode.MusicPlayer.WpfPlayer.csproj -c Release -o ./publish /p:Version=${{ env.version }} /p:AssemblyVersion=${{ env.version }} /p:FileVersion=${{ env.version }}
       
       - name: Zip published output
         run: Compress-Archive -Path ./publish/* -DestinationPath ./publish/BCode.MusicPlayer-${{ env.version }}.zip
