@@ -17,7 +17,7 @@ public class BrowseItem : ReactiveObject
     {
         Name = song.Name;
         Song = song;
-        IconType = "File";
+        IconType = "music";
         Duration = song.Duration.ToString(@"mm\:ss");
         Artist = song.ArtistName;
     }
