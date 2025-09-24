@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{4E59
 		Scripts\GenerateNewRelease.ps1 = Scripts\GenerateNewRelease.ps1
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BCode.MusicPlayer.MetadataEditor", "BCode.MusicPlayer.MetadataEditor\BCode.MusicPlayer.MetadataEditor.csproj", "{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +44,10 @@ Global
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +58,7 @@ Global
 		{B635B235-0425-49BD-A3F8-8A5D4706C408} = {8692E81C-C0C8-491A-A932-C4462A962C53}
 		{A1E9BEAC-E096-4D31-AD0E-947BC758A00B} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
 		{4E5997DF-4734-45ED-959A-B15E5DFA6C97} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
+		{5480DCDA-5ED0-43B5-BD87-7DFA47FC3F15} = {D05D5C25-1881-4F18-9AE1-990E7E5FE217}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A7DB7CD9-7FC3-46ED-9822-4363E81CCAC3}
