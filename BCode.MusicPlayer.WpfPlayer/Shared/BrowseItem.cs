@@ -13,6 +13,14 @@ public class BrowseItem : ReactiveObject
         IconType = "FolderOutline";
     }
 
+    public BrowseItem(DirectoryInfo di, string displayName)
+    {
+        Name = displayName;
+        DirectoryDetail = di;
+        IsDirectory = true;
+        IconType = "FolderOutline";
+    }
+
     public BrowseItem(Song song)
     {
         Name = song.Name;
