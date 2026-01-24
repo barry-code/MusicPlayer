@@ -38,7 +38,7 @@
                             <RowDefinition Height="50"/>
                         </Grid.RowDefinitions>
                         <TextBlock Grid.Row="0" Text="Loading Songs..." VerticalAlignment="Center" HorizontalAlignment="Center" Margin="10,0" />
-                        <ProgressBar Grid.Row="1" IsIndeterminate="True" Style="{StaticResource MaterialDesignCircularProgressBar}" Margin="10,0" />
+                        <ProgressBar Grid.Row="1" IsIndeterminate="True" Margin="10,0" />
                         <Button Grid.Row="2" Content="Cancel" Command="{Binding CancelLoadCmd}" VerticalAlignment="Center" Margin="10,0"/>
                     </Grid>
                 </materialDesign:Card>                
@@ -61,25 +61,25 @@
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Image Source="/Resources/headphone_music_icon_640x532.png" Height="30" Width="30" Margin="0,0,25,0" ToolTip="{Binding AppName}" />
-                        <Button Name="btnSettings" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnSettings_Click" ToolTip="Settings">
+                        <Button Name="btnSettings" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnSettings_Click" ToolTip="Settings">
                             <materialDesign:PackIcon Kind="Cog" Height="25" Width="25"/>
                         </Button>
-                        <Button Name="btnMinimalPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimalPlayer_Click" ToolTip="Minimal Player Mode">
+                        <Button Name="btnMinimalPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnMinimalPlayer_Click" ToolTip="Minimal Player Mode">
                             <materialDesign:PackIcon Kind="ArrowExpandUp" Height="25" Width="25"/>
                         </Button>
-                        <Button Name="btnExpandedPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnExpandedPlayer_Click" ToolTip="Expanded Player Mode">
+                        <Button Name="btnExpandedPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnExpandedPlayer_Click" ToolTip="Expanded Player Mode">
                             <materialDesign:PackIcon Kind="ArrowExpandDown" Height="25" Width="25"/>
                         </Button>                        
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                        <Button Name="btnMinimize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimize_Click" ToolTip="Minimize Window">
+                        <Button Name="btnMinimize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnMinimize_Click" ToolTip="Minimize Window">
                             <materialDesign:PackIcon Kind="WindowMinimize" Height="25" Width="25"/>
                         </Button>
-                        <Button Name="btnMaximize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMaximize_Click" ToolTip="Maximize Window">
+                        <Button Name="btnMaximize" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnMaximize_Click" ToolTip="Maximize Window">
                             <materialDesign:PackIcon Kind="WindowMaximize" Height="25" Width="25"/>
                         </Button>
-                        <Button Name="btnClose" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnClose_Click" ToolTip="Exit">
+                        <Button Name="btnClose" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignIconButton}" Click="btnClose_Click" ToolTip="Exit">
                             <materialDesign:PackIcon Kind="WindowClose" Height="25" Width="25"/>
                         </Button>
                     </StackPanel>
@@ -94,26 +94,26 @@
                         <ColumnDefinition Width="1.5*" MinWidth="60" />
                     </Grid.ColumnDefinitions>
 
-                    <Button Grid.Column="0" x:Name="prevBtn" Command="{Binding PrevCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,5" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <Button Grid.Column="0" x:Name="prevBtn" Command="{Binding PrevCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,5" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ElevationAssist.Elevation="Dp2">
                         <materialDesign:PackIcon Kind="SkipPrevious" Height="Auto" Width="Auto" Margin="0" Padding="0"/>
                     </Button>
 
-                    <Button Grid.Column="1" x:Name="skipBackBtn" Command="{Binding SkipBackCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,10" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <Button Grid.Column="1" x:Name="skipBackBtn" Command="{Binding SkipBackCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,10" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ElevationAssist.Elevation="Dp2">
                         <materialDesign:PackIcon Kind="Rewind" Height="Auto" Width="Auto" Margin="0" Padding="0" />
                     </Button>
 
-                    <Button Grid.Column="2" x:Name="playPauseBtn" Command="{Binding PlayPauseCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0"  Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <Button Grid.Column="2" x:Name="playPauseBtn" Command="{Binding PlayPauseCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0"  Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ElevationAssist.Elevation="Dp2">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <materialDesign:PackIcon Kind="Play" Height="Auto" Width="Auto" Margin="0" Padding="0" Visibility="{Binding Player.IsPlaying, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" />
                             <materialDesign:PackIcon Kind="Pause" Height="Auto" Width="Auto" Margin="0" Padding="0" Visibility="{Binding Player.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </StackPanel>                        
                     </Button>
 
-                    <Button Grid.Column="3" x:Name="skipForwardBtn" Command="{Binding SkipAheadCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,10" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <Button Grid.Column="3" x:Name="skipForwardBtn" Command="{Binding SkipAheadCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,10" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ElevationAssist.Elevation="Dp2">
                         <materialDesign:PackIcon Kind="FastForward" Height="Auto" Width="Auto" Margin="0" Padding="0" MinWidth="30"/>
                     </Button>
 
-                    <Button Grid.Column="4" x:Name="nextBtn" Command="{Binding NextCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,5" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <Button Grid.Column="4" x:Name="nextBtn" Command="{Binding NextCmd}" Height="Auto" Width="Auto" Margin="2,0" Padding="0,5" Style="{StaticResource MaterialDesignRaisedButton_Rounded}" materialDesign:ElevationAssist.Elevation="Dp2">
                         <materialDesign:PackIcon Kind="SkipNext"  Height="Auto" Width="Auto" Margin="0" Padding="0"/>
                     </Button>
                 </Grid>
@@ -125,11 +125,11 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                        <Label Content="Track:" Foreground="{StaticResource SecondaryHueMidBrush}" />
+                        <Label Content="Track:" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" />
                         <Label Content="{Binding Player.CurrentSong.Name}" MinWidth="40" />
-                        <Label Content="Artist:" Foreground="{StaticResource SecondaryHueMidBrush}" Margin="10,0,0,0" />
+                        <Label Content="Artist:" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Margin="10,0,0,0" />
                         <Label Content="{Binding Player.CurrentSong.ArtistName}" MinWidth="40" />
-                        <Label Content="Album:" Foreground="{StaticResource SecondaryHueMidBrush}" Margin="10,0,0,0" />
+                        <Label Content="Album:" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Margin="10,0,0,0" />
                         <Label Content="{Binding Player.CurrentSong.AlbumName}" MinWidth="40" />
                     </StackPanel>
 
@@ -151,7 +151,7 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <materialDesign:Card Grid.Column="0" Margin="5" materialDesign:ElevationAssist.Elevation="Dp2">
                         <StackPanel Orientation="Vertical">
                             <Button Command="{Binding BrowseCmd}" Margin="5" Height="50" Style="{DynamicResource MaterialDesignRaisedButton_Rounded}" ToolTip="Browse">
                                 <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -168,20 +168,20 @@
                         </StackPanel>
                     </materialDesign:Card>
 
-                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ElevationAssist.Elevation="Dp2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource BooleanToVisibilityConverter}}">
                         <Grid>                            
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35"/>
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Go to Root Folder" Click="btnFolderBrowseGoHome" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Go to Root Folder" Click="btnFolderBrowseGoHome" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="Home" Height="25" Width="25"/>
                                 </Button>
-                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go Back Up Folder Level" Click="btnFolderBrowseGoUpLevel" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="FolderArrowLeft" Height="25" Width="25"/>
                                 </Button>
-                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go to Current Song Folder" Click="btnCurrentSongFolder" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Go to Current Song Folder" Click="btnCurrentSongFolder" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="LocationOn" Height="25" Width="25"/>
                                 </Button>
                                 <Label VerticalAlignment="Center" Content="{Binding FileExplorer.CurrentPath}"></Label>
@@ -199,7 +199,6 @@
                                       CanUserAddRows="False" 
                                       CanUserDeleteRows="False" 
                                       AutoGenerateColumns="False" 
-                                      Style="{StaticResource MaterialDesignDataGrid}" 
                                       SelectionMode="Single" 
                                       SelectionUnit="FullRow" 
                                       Margin="5" 
@@ -255,7 +254,7 @@
                         </Grid>         
                     </materialDesign:Card>
 
-                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ElevationAssist.Elevation="Dp2" Visibility="{Binding IsBrowseScreen, Converter={StaticResource InvertedBooleanToVisibilityConverter}}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="35"/>
@@ -263,18 +262,18 @@
                             </Grid.RowDefinitions>
 
                             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Add File(s) to Playlist" Command="{Binding AddFilesCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top" Height="25" Padding="0" Margin="5" ToolTip="Add File(s) to Playlist" Command="{Binding AddFilesCmd}" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="File" Height="25" Width="25"/>
                                 </Button>
-                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Add Folder to Playlist" Command="{Binding AddFolderCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Add Folder to Playlist" Command="{Binding AddFolderCmd}" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="Folder" Height="25" Width="25"/>
                                 </Button>
-                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Clear Playlist" Command="{Binding ClearPlayListCmd}" Style="{StaticResource MaterialDesignRaisedLightButton}">
+                                <Button VerticalAlignment="Top"  Height="25" Padding="0" Margin="5" ToolTip="Clear Playlist" Command="{Binding ClearPlayListCmd}" Style="{StaticResource MaterialDesignOutlinedButton}">
                                     <materialDesign:PackIcon Kind="ClearCircle" Height="25" Width="25"/>
                                 </Button>
                             </StackPanel>
 
-                            <DataGrid Grid.Row="1" x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" Style="{StaticResource MaterialDesignDataGrid}" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
+                            <DataGrid Grid.Row="1" x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />
                                     <DataGridTextColumn Header="Song" Binding="{Binding Name}" IsReadOnly="True" />
@@ -307,14 +306,14 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
-                    <materialDesign:Card Grid.Column="0" Margin="5" Visibility="{Binding ShowNotificationAlert, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" materialDesign:ShadowAssist.ShadowDepth="Depth2">
-                        <materialDesign:Snackbar Message="{Binding CurrentStatusMessage}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActive="True" Margin="10,0" />
+                    <materialDesign:Card Grid.Column="0" Margin="5" Visibility="{Binding ShowNotificationAlert, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" materialDesign:ElevationAssist.Elevation="Dp2">
+                        <materialDesign:Snackbar Message="{Binding CurrentStatusMessage}" HorizontalAlignment="Stretch" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActive="True" Margin="10,0" />
                     </materialDesign:Card>
                     <materialDesign:Card Grid.Column="0" Margin="5" Visibility="{Binding ShowNotificationAlert, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding NotificationMessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActiveChanged="snackBarMessages_IsActiveChanged" Margin="10,0" />
+                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding NotificationMessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActiveChanged="snackBarMessages_IsActiveChanged" Margin="10,0" />
                     </materialDesign:Card>
 
-                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ShadowAssist.ShadowDepth="Depth2">
+                    <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ElevationAssist.Elevation="Dp2">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="5,0,0,0">
                             <Button Width="40" Visibility="{Binding Player.IsMuted, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" Background="Transparent" Padding="0" BorderThickness="0" Command="{Binding MuteCmd}" >
                                 <materialDesign:PackIcon Kind="VolumeHigh" Height="30" Width="30" VerticalAlignment="Center" />

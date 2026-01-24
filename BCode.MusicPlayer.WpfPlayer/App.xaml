@@ -2,15 +2,34 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.DeepPurple.xaml" />
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Accent/MaterialDesignColor.Lime.xaml" />
+
+                <!-- Handles Light/Dark + Primary/Secondary colors -->
+                <materialDesign:BundledTheme BaseTheme="Dark"
+                                             PrimaryColor="DeepPurple"
+                                             SecondaryColor="Lime" />
+
+                <!-- Enables Material Design 2 styles -->
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign2.Defaults.xaml" />
+
+                <!-- Your custom styles -->
                 <ResourceDictionary Source="Resources/CustomStyles.xaml"/>
+
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- MD2 Neon Lime Accent (Lime A400) -->
+            <SolidColorBrush x:Key="MaterialDesignAccent" Color="#EEFF41" />
+            <SolidColorBrush x:Key="MaterialDesignAccentBrush" Color="#EEFF41" />
+
+            <SolidColorBrush x:Key="MaterialDesignBodySecondary" Color="#EEFF41" />
+            <SolidColorBrush x:Key="MaterialDesignBodySecondaryBrush" Color="#EEFF41" />
+
+            <!-- Old MD2 compatibility alias -->
+            <SolidColorBrush x:Key="MaterialDesignSecondaryBrush" Color="#EEFF41" />
         </ResourceDictionary>
     </Application.Resources>
+
 </Application>
