@@ -15,7 +15,7 @@ on:
     - '**.csproj'
 
 env:
-  DOTNET_VERSION: '6.0.100' # The .NET SDK version to use
+  DOTNET_VERSION: '10.0.102' # The .NET SDK version to use
 
 jobs:
   build-and-test:
@@ -29,7 +29,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -37,10 +37,10 @@ jobs:
       run: dotnet restore
       
     - name: Build
-      run: dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release
     
     - name: Test
-      run: dotnet test --no-restore --verbosity normal
+      run: dotnet test --verbosity normal
 
   publish-and-release:
     name: publish-and-release
@@ -79,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Upload Published Artifacts to Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           files: ./publish/BCode.MusicPlayer-${{ env.version }}.zip
