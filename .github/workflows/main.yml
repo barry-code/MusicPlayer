@@ -71,17 +71,11 @@ jobs:
       - name: Zip published output
         run: Compress-Archive -Path ./publish/* -DestinationPath ./publish/BCode.MusicPlayer-${{ env.version }}.zip
       
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          tag_name: ${{ github.ref_name }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Upload Published Artifacts to Release
+      - name: Create GitHub Release and Upload Artifacts
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           files: ./publish/BCode.MusicPlayer-${{ env.version }}.zip
+          overwrite_files: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
