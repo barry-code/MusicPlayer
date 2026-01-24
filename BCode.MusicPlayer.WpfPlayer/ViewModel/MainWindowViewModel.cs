@@ -45,7 +45,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             Player.PlayerEvent += HandlePlayerEvent;
 
-            _logger.LogDebug("Starting Music Player");
+            _logger.LogDebug("Starting Music Player...");
 
             FileExplorer = new FileExplorer();
 
