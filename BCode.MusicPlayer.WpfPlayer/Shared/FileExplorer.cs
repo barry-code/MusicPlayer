@@ -181,7 +181,15 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             {
                 var drives = DriveInfo.GetDrives();
                 CurrentContent.Clear();
-                CurrentContent.AddRange(drives.Select(d => new BrowseItem(d.RootDirectory)).ToArray());
+                
+                foreach (var drive in drives)
+                {
+                    string driveName = drive.RootDirectory.Name.Replace("\\","");
+                    string diskDetail = string.IsNullOrWhiteSpace(drive.VolumeLabel) ? $" ({drive.DriveType})" : $" {drive.VolumeLabel} ({drive.DriveType})";
+                    string displayName = $"{driveName} {diskDetail}";
+                    CurrentContent.Add(new BrowseItem(drive.RootDirectory, displayName));
+                }
+
                 _isAtTopLevel = true;
             }
             catch (Exception ex)
