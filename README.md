@@ -5,7 +5,7 @@
 
 ## What
 Windows Desktop Audio file player.
-Developed using .Net 6 WPF.
+Developed using .Net 10 WPF.
 
 
 ## Why
