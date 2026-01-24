@@ -15,6 +15,7 @@
 # Example to manually specify what version to tag, and generate a release.
 # .\Scripts\GenerateNewRelease.ps1 -UseVersion v2.1.0
 #
+#
 
 param(
     [string]$StartVersion = "v1.1.0",
