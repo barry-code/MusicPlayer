@@ -307,10 +307,10 @@
                         <ColumnDefinition Width="250"/>
                     </Grid.ColumnDefinitions>
                     <materialDesign:Card Grid.Column="0" Margin="5" Visibility="{Binding ShowNotificationAlert, Converter={StaticResource InvertedBooleanToVisibilityConverter}}" materialDesign:ElevationAssist.Elevation="Dp2">
-                        <materialDesign:Snackbar Message="{Binding CurrentStatusMessage}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActive="True" Margin="10,0" />
+                        <materialDesign:Snackbar Message="{Binding CurrentStatusMessage}" HorizontalAlignment="Stretch" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActive="True" Margin="10,0" />
                     </materialDesign:Card>
                     <materialDesign:Card Grid.Column="0" Margin="5" Visibility="{Binding ShowNotificationAlert, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding NotificationMessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource SecondaryHueMidBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActiveChanged="snackBarMessages_IsActiveChanged" Margin="10,0" />
+                        <materialDesign:Snackbar x:Name="snackBarMessages" MessageQueue="{Binding NotificationMessageQueue}" HorizontalAlignment="Stretch" Foreground="{DynamicResource MaterialDesignSecondaryBrush}" Background="{DynamicResource MaterialDesignCardBackground}" VerticalAlignment="Center" IsActiveChanged="snackBarMessages_IsActiveChanged" Margin="10,0" />
                     </materialDesign:Card>
 
                     <materialDesign:Card Grid.Column="1" Margin="5" materialDesign:ElevationAssist.Elevation="Dp2">

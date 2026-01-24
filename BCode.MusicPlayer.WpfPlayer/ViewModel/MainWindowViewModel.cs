@@ -49,8 +49,10 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             FileExplorer = new FileExplorer();
 
-            AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles);
-            AddFolderCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist);
+            AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles,
+                outputScheduler: RxApp.MainThreadScheduler);
+            AddFolderCmd = ReactiveCommand.CreateFromTask(AddSongsToPlaylist,
+                outputScheduler: RxApp.MainThreadScheduler);
             ClearPlayListCmd = ReactiveCommand.Create(ClearPlaylist);
             PlayPauseCmd = ReactiveCommand.Create(PlayPause);
             PlaySongFromPlayListCmd = ReactiveCommand.Create<int>(PlaySongFromPlaylist);
