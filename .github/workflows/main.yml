@@ -1,6 +1,7 @@
 name: wpf musicplayer build and test
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
     paths:
@@ -27,7 +28,7 @@ jobs:
         os: [windows-latest]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v3
       with:
@@ -49,10 +50,10 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
@@ -70,12 +71,23 @@ jobs:
       
       - name: Zip published output
         run: Compress-Archive -Path ./publish/* -DestinationPath ./publish/BCode.MusicPlayer-${{ env.version }}.zip
+        
+      - name: Wait for ZIP to flush
+          run: Start-Sleep -Seconds 20
+          shell: pwsh
       
-      - name: Create GitHub Release and Upload Artifacts
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload Published Artifacts to Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           files: ./publish/BCode.MusicPlayer-${{ env.version }}.zip
-          overwrite_files: true
+
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
