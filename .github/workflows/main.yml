@@ -73,8 +73,8 @@ jobs:
         run: Compress-Archive -Path ./publish/* -DestinationPath ./publish/BCode.MusicPlayer-${{ env.version }}.zip
         
       - name: Wait for ZIP to flush
-          run: Start-Sleep -Seconds 20
-          shell: pwsh
+        run: Start-Sleep -Seconds 20
+        shell: pwsh
       
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
