@@ -83,6 +83,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
+      - name: Wait some more
+        run: Start-Sleep -Seconds 20
+        shell: pwsh
+      
       - name: Upload Published Artifacts to Release
         uses: softprops/action-gh-release@v2
         with:
