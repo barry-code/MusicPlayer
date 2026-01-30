@@ -10,7 +10,7 @@ public class BrowseItem : ReactiveObject
         Name = di.Name;
         DirectoryDetail = di;
         IsDirectory = true;
-        IconType = "FolderOutline";
+        IconType = "Folder";
     }
 
     public BrowseItem(DirectoryInfo di, string displayName)
@@ -18,7 +18,7 @@ public class BrowseItem : ReactiveObject
         Name = displayName;
         DirectoryDetail = di;
         IsDirectory = true;
-        IconType = "FolderOutline";
+        IconType = "Folder";
     }
 
     public BrowseItem(Song song)

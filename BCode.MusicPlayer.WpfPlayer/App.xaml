@@ -21,14 +21,14 @@
             </ResourceDictionary.MergedDictionaries>
 
             <!-- MD2 Neon Lime Accent (Lime A400) -->
-            <SolidColorBrush x:Key="MaterialDesignAccent" Color="#EEFF41" />
-            <SolidColorBrush x:Key="MaterialDesignAccentBrush" Color="#EEFF41" />
+            <SolidColorBrush x:Key="MaterialDesignAccent" Color="#FFAEEA00" />
+            <SolidColorBrush x:Key="MaterialDesignAccentBrush" Color="#FFAEEA00" />
 
-            <SolidColorBrush x:Key="MaterialDesignBodySecondary" Color="#EEFF41" />
-            <SolidColorBrush x:Key="MaterialDesignBodySecondaryBrush" Color="#EEFF41" />
+            <SolidColorBrush x:Key="MaterialDesignBodySecondary" Color="#FFAEEA00" />
+            <SolidColorBrush x:Key="MaterialDesignBodySecondaryBrush" Color="#FFAEEA00" />
 
             <!-- Old MD2 compatibility alias -->
-            <SolidColorBrush x:Key="MaterialDesignSecondaryBrush" Color="#EEFF41" />
+            <SolidColorBrush x:Key="MaterialDesignSecondaryBrush" Color="#FFAEEA00" />
         </ResourceDictionary>
     </Application.Resources>
 
