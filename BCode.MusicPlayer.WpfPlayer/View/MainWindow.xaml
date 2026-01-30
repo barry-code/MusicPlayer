@@ -61,14 +61,14 @@
 
                     <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                         <Image Source="/Resources/headphone_music_icon_640x532.png" Height="30" Width="30" Margin="0,0,25,0" ToolTip="{Binding AppName}" />
-                        <Button Name="btnSettings" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnSettings_Click" ToolTip="Settings">
-                            <materialDesign:PackIcon Kind="Cog" Height="25" Width="25"/>
+                        <Button Name="btnSettings" Height="27" Margin="5,2" Style="{StaticResource MaterialDesignPaperButton}" Click="btnSettings_Click" ToolTip="Settings">
+                            <materialDesign:PackIcon Kind="Cog" Height="20" Width="20"/>
                         </Button>
-                        <Button Name="btnMinimalPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnMinimalPlayer_Click" ToolTip="Minimal Player Mode">
-                            <materialDesign:PackIcon Kind="ArrowExpandUp" Height="25" Width="25"/>
+                        <Button Name="btnMinimalPlayer" Height="27" Margin="5,0" Style="{StaticResource MaterialDesignPaperButton}" Click="btnMinimalPlayer_Click" ToolTip="Minimal Player Mode">
+                            <materialDesign:PackIcon Kind="ArrowExpandUp" Height="20" Width="20"/>
                         </Button>
-                        <Button Name="btnExpandedPlayer" Height="30" Margin="5,0" Style="{StaticResource MaterialDesignToolButton}" Click="btnExpandedPlayer_Click" ToolTip="Expanded Player Mode">
-                            <materialDesign:PackIcon Kind="ArrowExpandDown" Height="25" Width="25"/>
+                        <Button Name="btnExpandedPlayer" Height="27" Margin="5,0" Style="{StaticResource MaterialDesignPaperButton}" Click="btnExpandedPlayer_Click" ToolTip="Expanded Player Mode">
+                            <materialDesign:PackIcon Kind="ArrowExpandDown" Height="20" Width="20"/>
                         </Button>                        
                     </StackPanel>
 
