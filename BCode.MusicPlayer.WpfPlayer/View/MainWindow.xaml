@@ -229,6 +229,22 @@
                                Opacity="0.2"
                                IsHitTestVisible="False" />
 
+                            <Grid Grid.Row="1"
+                                  Panel.ZIndex="10"
+                                  Visibility="{Binding FileExplorer.IsLoading,
+                                Converter={StaticResource BooleanToVisibilityConverter}}">
+
+                                <Border Background="#80000000"/>                               
+
+                                <ProgressBar
+                                    Style="{StaticResource MaterialDesignCircularProgressBar}"
+                                    Width="100"
+                                    Height="100"
+                                    IsIndeterminate="True"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+                            </Grid>
+
                             <DataGrid Grid.Row="1" 
                                       x:Name="browseItemGrid" 
                                       ItemsSource="{Binding FileExplorer.CurrentContent}" 
@@ -240,7 +256,7 @@
                                       Margin="5" 
                                       Background="Transparent" 
                                       MouseDoubleClick="browseItemGrid_MouseDoubleClick"
-                                      IsReadOnly="True" 
+                                      IsReadOnly="True"                                       
                                       SelectedItem="{Binding FileExplorer.SelectedItem}">
 
                                 <DataGrid.Resources>

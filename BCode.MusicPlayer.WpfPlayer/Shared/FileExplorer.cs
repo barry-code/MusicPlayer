@@ -46,6 +46,9 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private ImageSource _backgroundImage;
         public ImageSource BackgroundImage { get => _backgroundImage; set => this.RaiseAndSetIfChanged(ref _backgroundImage, value); }
 
+        private bool _isLoading;
+        public bool IsLoading { get => _isLoading; set => this.RaiseAndSetIfChanged(ref _isLoading, value); } 
+
         public void GoToTopDirectoryLevel()
         {
             try
@@ -145,6 +148,7 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
             try
             {
+                IsLoading = true;
                 CurrentPath = directory;
 
                 CurrentContent.Clear();
@@ -172,6 +176,10 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
             catch (Exception ex)
             {
                 _logger.LogError(ex, "error updating directory");
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 

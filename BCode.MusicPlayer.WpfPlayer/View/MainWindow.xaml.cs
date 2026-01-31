@@ -105,7 +105,6 @@ namespace BCode.MusicPlayer.WpfPlayer.View
             {
                 _logger.LogError(ex, "Error working with notifications");
             }
-            
         }
 
         private async void browseItemGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
