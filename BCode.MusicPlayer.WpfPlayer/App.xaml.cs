@@ -16,6 +16,7 @@ using Microsoft.Extensions.Hosting;
 using log4net;
 using System.Text;
 using BCode.MusicPlayer.WpfPlayer.Shared;
+using BCode.MusicPlayer.WpfPlayer.ViewModel;
 
 namespace BCode.MusicPlayer.WpfPlayer
 {
@@ -37,6 +38,7 @@ namespace BCode.MusicPlayer.WpfPlayer
             builder.ConfigureLog4NetLogging();
             builder.RegisterType<MainWindow>().As<IMainWindow>().SingleInstance();
             builder.RegisterType<MyWpfPlayer>().As<IPlayer>().SingleInstance();
+            builder.RegisterType<SettingsManager>().As<ISettingsManager>().SingleInstance();
 
             _container = builder.Build();
 

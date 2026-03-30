@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="BCode.MusicPlayer.WpfPlayer.View.SettingsControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BCode.MusicPlayer.WpfPlayer.View"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </UserControl.Resources>
+    
+    <Border CornerRadius="10" Background="{DynamicResource MaterialDesignPaper}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="Settings" Style="{StaticResource MaterialDesignHeadline5TextBlock}"/>
+                <Button x:Name="saveButton" Grid.Column="2" Margin="5,0" Content="Save" Click="Save_Button_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+                <Button x:Name="closeButton" Grid.Column="3" Content="Close" Click="Close_Button_Click" Style="{StaticResource MaterialDesignRaisedButton}"/>
+            </Grid>
+            <Grid Grid.Row="1" Margin="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                    <RowDefinition Height="30" />
+                </Grid.RowDefinitions>                
+
+                <GroupBox Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Grid.RowSpan="4"
+                          Header="Background" Margin="0,0,0,8" Padding="8">
+                  <Grid>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="Auto"/>
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                      <RowDefinition Height="Auto" />
+                      <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <CheckBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center"
+                              IsChecked="{Binding UseCustomBackgroundImage, Mode=TwoWay}" />
+                    <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="Use custom background image" VerticalAlignment="Center"
+                               ToolTip="Use custom background image in playlist background, and in browse mode when no album art found."/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding CustomBackgroundImagePath, Mode=TwoWay}"
+                             VerticalAlignment="Center" IsEnabled="{Binding UseCustomBackgroundImage}" Margin="0,0,8,0"
+                             IsReadOnly="True" ToolTip="Select path using the Browse button."/>
+                    <Button Grid.Row="1" Grid.Column="2" Content="Browse..." Click="Browse_Button_Click" 
+                            VerticalAlignment="Center" IsEnabled="{Binding UseCustomBackgroundImage}"
+                            Style="{StaticResource MaterialDesignRaisedButton}"/>
+                  </Grid>
+                </GroupBox>
+            </Grid>
+        </Grid>
+    </Border>
+        
+    
+</UserControl>

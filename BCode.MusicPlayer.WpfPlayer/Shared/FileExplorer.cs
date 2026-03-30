@@ -12,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 
 namespace BCode.MusicPlayer.WpfPlayer.Shared
 {
@@ -24,6 +25,8 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private readonly object _imgLock = new object();
         private BitmapImage _nextImage;
         private ILibraryManager _libraryManager;
+
+        public event Action<bool> FolderImageAvailable;
 
         public FileExplorer()
         {
@@ -43,8 +46,8 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         private BrowseItem _selectedItem;
         public BrowseItem SelectedItem { get => _selectedItem; set => this.RaiseAndSetIfChanged(ref _selectedItem, value); }
 
-        private ImageSource _backgroundImage;
-        public ImageSource BackgroundImage { get => _backgroundImage; set => this.RaiseAndSetIfChanged(ref _backgroundImage, value); }
+        private ImageSource _folderImage;
+        public ImageSource FolderImage { get => _folderImage; set => this.RaiseAndSetIfChanged(ref _folderImage, value); }
 
         private bool _isLoading;
         public bool IsLoading { get => _isLoading; set => this.RaiseAndSetIfChanged(ref _isLoading, value); } 
@@ -108,11 +111,12 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
         {
             _currentlyPlayingFolderPath = _currentPath.FullName;
 
-            //TODO: move all functionality relating to background image, into central location so can be used by both browse and also playlist screen.
             lock (_imgLock)
             {
-                BackgroundImage = _nextImage;
+                FolderImage = _nextImage;
             }
+
+            FolderImageAvailable?.Invoke(FolderImage != null);
         }
 
         public async Task GoToDirectory(DirectoryInfo newDirectory)
@@ -221,17 +225,13 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared
 
                 if (chosenImage is not null)
                 {
-                    BitmapImage bitmap = new BitmapImage();
-                    bitmap.BeginInit();
-                    bitmap.UriSource = new Uri(chosenImage.FullName, UriKind.Absolute);
-                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
-                    bitmap.EndInit();
-                    bitmap.Freeze();
+                    BitmapImage bitmap = FilesHelper.GetImage(chosenImage.FullName);
 
                     lock (_imgLock)
                     {
                         _nextImage = bitmap;
                     }
+                    
                 }
                 else
                 {

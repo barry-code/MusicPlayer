@@ -10,8 +10,6 @@ namespace BCode.MusicPlayer.WpfPlayer.Shared;
 
 public class MyWpfPlayer : LibVlcPlayer, INotifyPropertyChanged
 {
-    SettingsManager _settingsManager;
-
     public event PropertyChangedEventHandler PropertyChanged;
 
     public override IList<Song> PlayList { get; set; } = new ObservableCollection<Song>();
@@ -109,22 +107,11 @@ public class MyWpfPlayer : LibVlcPlayer, INotifyPropertyChanged
     public override void Initialize()
     {
         base.Initialize();
-
-        _settingsManager = new SettingsManager();
-        
-        var currentSettings = _settingsManager.GetSettings();
-
-        CurrentVolume = currentSettings.LastVolume;
     }
 
     public override void Exit()
     {
         base.Exit();
-
-        _settingsManager.UpdateSettings(new MusicPlayerSettings()
-        {
-            LastVolume = CurrentVolume
-        });
     }
 
     private void NotifyPropertyChanged([CallerMemberName] string name = "")

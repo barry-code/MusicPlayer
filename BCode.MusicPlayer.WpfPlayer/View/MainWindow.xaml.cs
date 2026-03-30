@@ -20,15 +20,26 @@ namespace BCode.MusicPlayer.WpfPlayer.View
         private MainWindowViewModel _viewModel;
         private ILogger _logger;
 
-        public MainWindow(IPlayer player)
+        public MainWindow(IPlayer player,
+            ISettingsManager settingsManager)
         {
             InitializeComponent();
 
             _logger = ApplicationLoggerFactory.CreateLogger<MainWindow>();
 
-            _viewModel = new MainWindowViewModel(player, _logger);
+            _viewModel = new MainWindowViewModel(player, _logger, settingsManager, new SettingsControlViewModel(settingsManager));
 
             DataContext = _viewModel;
+
+            this.Closing += (o,e) =>
+            {
+                _viewModel.Cleanup();
+            };
+
+            settingsControl.SettingsClosedEvent += (_, _) =>
+            {
+                _viewModel.SettingsViewModel.IsSettingsOpen = false;
+            };
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -71,7 +82,7 @@ namespace BCode.MusicPlayer.WpfPlayer.View
 
         private void btnSettings_Click(object sender, RoutedEventArgs e)
         {
-
+            _viewModel.SettingsViewModel.IsSettingsOpen = !_viewModel.SettingsViewModel.IsSettingsOpen;
         }
 
         private void btnMinimalPlayer_Click(object sender, RoutedEventArgs e)

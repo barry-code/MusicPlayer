@@ -13,6 +13,8 @@ using Timer = System.Threading.Timer;
 using System.Windows;
 using System.Reflection;
 using BCode.MusicPlayer.WpfPlayer.Shared;
+using System.Windows.Media;
+using System.IO;
 
 namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 {
@@ -30,11 +32,19 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private const int ExpandedModeMinHeight = 540;
         private const int MinimizedModeMinWidth = 600;
         private const int ExpandedModeMinWidth = 600;
+        private readonly ISettingsManager _settingsManager;
+        private ImageSource _defaultBackgroundImage;
+        public SettingsControlViewModel SettingsViewModel { get; set; }
 
-        public MainWindowViewModel(IPlayer player, ILogger logger)
+        public MainWindowViewModel(IPlayer player, 
+            ILogger logger,
+            ISettingsManager settingsManager,
+            SettingsControlViewModel settingsViewModel)
         {
             Player = player;
             _logger = logger;
+            _settingsManager = settingsManager;
+            SettingsViewModel = settingsViewModel;
             var assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
                           ?? assembly.GetName().Version?.ToString();
@@ -47,7 +57,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
             _logger.LogDebug("Starting Music Player...");
 
-            FileExplorer = new FileExplorer();
+            Init();
 
             AddFilesCmd = ReactiveCommand.CreateFromTask(AddFiles,
                 outputScheduler: RxApp.MainThreadScheduler);
@@ -66,7 +76,9 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             UnMuteCmd = ReactiveCommand.Create(UnMute);
             BrowseCmd = ReactiveCommand.Create(BrowseMode);
             PlaylistCmd = ReactiveCommand.Create(NonBrowseMode);
-        }        
+
+            _settingsManager.SettingsChanged += HandleSettingsUpdated;
+        }
 
         public ReactiveCommand<Unit, Unit> AddFilesCmd { get; }
         public ReactiveCommand<Unit, Unit> AddFolderCmd { get; }
@@ -180,6 +192,9 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             get => _isBrowseScreen;
             set => this.RaiseAndSetIfChanged(ref _isBrowseScreen, value);
         }
+
+        private ImageSource _backgroundImage;
+        public ImageSource BackgroundImage { get => _backgroundImage; set => this.RaiseAndSetIfChanged(ref _backgroundImage, value); }
 
         public string AppName => _appName;        
 
@@ -577,11 +592,13 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
         private void BrowseMode()
         {
             IsBrowseScreen = true;
+            BackgroundImage = FileExplorer.FolderImage is null ? _defaultBackgroundImage : FileExplorer.FolderImage;
         }
 
         private void NonBrowseMode()
         {
             IsBrowseScreen = false;
+            BackgroundImage = _defaultBackgroundImage;
         }
 
         private void CheckBrowseMode()
@@ -641,6 +658,50 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
                 _cancelTokenSource?.Dispose();
             }
             
+        }
+    
+        private void Init()
+        {
+            CheckBackgroundImage();
+
+            FileExplorer = new FileExplorer();
+            FileExplorer?.FolderImageAvailable += BackgroundImageHandle;
+        }
+
+        private void BackgroundImageHandle(bool explorerImageAvailable)
+        {
+            BackgroundImage = explorerImageAvailable ? FileExplorer.FolderImage : _defaultBackgroundImage;
+        }
+
+        private void CheckBackgroundImage()
+        {
+            var currentSettings = _settingsManager.CurrentSettings;
+            Player?.CurrentVolume = currentSettings.LastVolume;
+
+            if (currentSettings.UseCustomBackgroundImage &&
+                !string.IsNullOrWhiteSpace(currentSettings.CustomBackgroundImagePath) &&
+                File.Exists(currentSettings.CustomBackgroundImagePath))
+            {
+                _defaultBackgroundImage = FilesHelper.GetImage(currentSettings.CustomBackgroundImagePath);
+                BackgroundImage = _defaultBackgroundImage;
+            }
+            else
+            {
+                BackgroundImage = _defaultBackgroundImage = null;
+            }
+        }
+
+        private void HandleSettingsUpdated(object sender, EventArgs e)
+        {
+            CheckBackgroundImage();
+        }
+
+        public void Cleanup()
+        {  
+            var current = _settingsManager.CurrentSettings;
+            current.LastVolume = Player.CurrentVolume;
+            _settingsManager?.UpdateSettings(current);
+            FileExplorer?.FolderImageAvailable -= BackgroundImageHandle;
         }
     }    
 }

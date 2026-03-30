@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:BCode.MusicPlayer.WpfPlayer"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:infra="clr-namespace:BCode.MusicPlayer.WpfPlayer.Shared" 
+    xmlns:view="clr-namespace:BCode.MusicPlayer.WpfPlayer.View" 
     x:Class="BCode.MusicPlayer.WpfPlayer.View.MainWindow"    
     mc:Ignorable="d"         
     WindowStyle="None" 
@@ -224,7 +225,7 @@
                             </Grid>
 
                             <Image Grid.Row="1"
-                               Source="{Binding FileExplorer.BackgroundImage}" 
+                               Source="{Binding BackgroundImage}" 
                                Stretch="Uniform" 
                                Opacity="0.2"
                                IsHitTestVisible="False" />
@@ -325,6 +326,12 @@
                                 </Button>
                             </StackPanel>
 
+                            <Image Grid.Row="1"
+                                   Source="{Binding BackgroundImage}"
+                                   Stretch="Uniform" 
+                                   Opacity="0.2"
+                                   IsHitTestVisible="False" />
+
                             <DataGrid Grid.Row="1" x:Name="playlistGrid" ItemsSource="{Binding Player.PlayList}" SelectedItem="{Binding Player.CurrentSong, Mode=OneWay}" IsReadOnly="True" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" SelectionMode="Single" CanUserSortColumns="True" CanUserResizeColumns="True" SelectionUnit="FullRow" Margin="5" Background="Transparent">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="#" Binding="{Binding Order}" IsReadOnly="True" />
@@ -412,6 +419,13 @@
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>
+
+                <view:SettingsControl 
+                    x:Name="settingsControl"
+                    DataContext="{Binding SettingsViewModel}"
+                    Grid.Row="1" 
+                    Grid.RowSpan="3" 
+                    Visibility="{Binding IsSettingsOpen, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
             </Grid>
         </materialDesign:DialogHost>        
