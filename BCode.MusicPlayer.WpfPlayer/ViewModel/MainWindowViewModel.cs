@@ -662,7 +662,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
     
         private void Init()
         {
-            CheckBackgroundImage();
+            CheckSettings(isStartup:true);
 
             FileExplorer = new FileExplorer();
             FileExplorer?.FolderImageAvailable += BackgroundImageHandle;
@@ -673,10 +673,14 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
             BackgroundImage = explorerImageAvailable ? FileExplorer.FolderImage : _defaultBackgroundImage;
         }
 
-        private void CheckBackgroundImage()
+        private void CheckSettings(bool isStartup = false)
         {
             var currentSettings = _settingsManager.CurrentSettings;
-            Player?.CurrentVolume = currentSettings.LastVolume;
+
+            if (isStartup)
+            {
+                Player?.CurrentVolume = currentSettings.LastVolume;
+            }
 
             if (currentSettings.UseCustomBackgroundImage &&
                 !string.IsNullOrWhiteSpace(currentSettings.CustomBackgroundImagePath) &&
@@ -693,7 +697,7 @@ namespace BCode.MusicPlayer.WpfPlayer.ViewModel
 
         private void HandleSettingsUpdated(object sender, EventArgs e)
         {
-            CheckBackgroundImage();
+            CheckSettings();
         }
 
         public void Cleanup()
