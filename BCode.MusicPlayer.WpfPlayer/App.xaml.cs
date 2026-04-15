@@ -37,6 +37,7 @@ namespace BCode.MusicPlayer.WpfPlayer
 
             builder.ConfigureLog4NetLogging();
             builder.RegisterType<MainWindow>().As<IMainWindow>().SingleInstance();
+            builder.RegisterType<NAudioController>().As<IAudioController>().SingleInstance();
             builder.RegisterType<MyWpfPlayer>().As<IPlayer>().SingleInstance();
             builder.RegisterType<SettingsManager>().As<ISettingsManager>().SingleInstance();
 

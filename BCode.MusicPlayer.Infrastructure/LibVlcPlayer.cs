@@ -215,7 +215,8 @@ namespace BCode.MusicPlayer.Infrastructure
 
         public virtual void Initialize()
         {
-            CurrentVolume = 30;
+            //TODO: think it should be set 100 here, double check we removed all other instances of changing volumne.
+            CurrentVolume = 100;
         }
 
         public virtual void Next()
